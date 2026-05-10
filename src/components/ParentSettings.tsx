@@ -1,13 +1,17 @@
 import Link from "next/link";
 
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { LearningModeSelector } from "@/components/LearningModeSelector";
 import type { Palette } from "@/lib/constants";
+import type { LearningMode } from "@/lib/learning-content";
 import type { LanguagePack, LanguagePackId } from "@/lib/language-packs";
 
 type ParentSettingsProps = {
   isOpen: boolean;
   onToggle: () => void;
   onClose: () => void;
+  learningMode: LearningMode;
+  onLearningModeChange: (learningMode: LearningMode) => void;
   languagePack: LanguagePack;
   onLanguageChange: (languageId: LanguagePackId) => void;
   showVirtualKeyboard: boolean;
@@ -112,6 +116,8 @@ export function ParentSettings({
   isOpen,
   onToggle,
   onClose,
+  learningMode,
+  onLearningModeChange,
   languagePack,
   onLanguageChange,
   showVirtualKeyboard,
@@ -197,6 +203,12 @@ export function ParentSettings({
             </div>
 
             <div className="mt-5 space-y-4">
+              <LearningModeSelector
+                learningMode={learningMode}
+                onChange={onLearningModeChange}
+                palette={palette}
+              />
+
               <LanguageSelector
                 languagePack={languagePack}
                 onChange={onLanguageChange}
@@ -204,13 +216,30 @@ export function ParentSettings({
                 compact
               />
 
-              <ToggleRow
-                label="Virtual keyboard"
-                description="Show or hide the clickable keyboard for mouse and touch play."
-                checked={showVirtualKeyboard}
-                onToggle={onToggleVirtualKeyboard}
-                palette={palette}
-              />
+              {learningMode === "letters" ? (
+                <ToggleRow
+                  label="Virtual keyboard"
+                  description="Show or hide the clickable keyboard for mouse and touch play."
+                  checked={showVirtualKeyboard}
+                  onToggle={onToggleVirtualKeyboard}
+                  palette={palette}
+                />
+              ) : (
+                <div
+                  className="rounded-[1.4rem] border px-4 py-4"
+                  style={{
+                    background: palette.buttonSurface,
+                    borderColor: palette.buttonBorder
+                  }}
+                >
+                  <p className="font-display text-2xl tracking-[-0.04em]" style={{ color: palette.keyText }}>
+                    Color strip
+                  </p>
+                  <p className="mt-1 text-sm font-bold leading-6" style={{ color: palette.detailText }}>
+                    Color mode keeps the tap-ready color bar visible so kids can always choose a color.
+                  </p>
+                </div>
+              )}
 
               <ToggleRow
                 label="Play controls"

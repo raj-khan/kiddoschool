@@ -3,6 +3,7 @@
 import { startTransition, useEffect, useEffectEvent, useRef, useState, useSyncExternalStore } from "react";
 
 import { BigKeyDisplay } from "@/components/BigKeyDisplay";
+import { ColorPaletteBar } from "@/components/ColorPaletteBar";
 import { ControlButtons } from "@/components/ControlButtons";
 import { ParentSettings } from "@/components/ParentSettings";
 import { VirtualKeyboard } from "@/components/VirtualKeyboard";
@@ -13,6 +14,12 @@ import {
   PALETTES,
   type Palette
 } from "@/lib/constants";
+import {
+  getColorLearningContent,
+  getColorOptionById,
+  getLearningModeLabel,
+  type LearningMode
+} from "@/lib/learning-content";
 import {
   DEFAULT_LANGUAGE_ID,
   getLanguagePackById,
@@ -31,7 +38,8 @@ type GameState = {
   message: string;
   palette: Palette;
   burstKey: number;
-  activeKeyValue: string | null;
+  activeItemId: string | null;
+  previewColor: string | null;
 };
 
 const INITIAL_PALETTE = PALETTES[0];
@@ -44,7 +52,8 @@ const INITIAL_STATE: GameState = {
   message: "",
   palette: INITIAL_PALETTE,
   burstKey: 0,
-  activeKeyValue: null
+  activeItemId: null,
+  previewColor: null
 };
 
 const INTERACTIVE_TAGS = new Set(["BUTTON", "A", "INPUT", "SELECT", "TEXTAREA"]);
@@ -82,6 +91,7 @@ function shouldIgnoreShortcut(event: KeyboardEvent): boolean {
 export function TypingGame() {
   const [gameState, setGameState] = useState(INITIAL_STATE);
   const [isMuted, setIsMuted] = useState(false);
+  const [learningMode, setLearningMode] = useState<LearningMode>("letters");
   const [selectedLanguageId, setSelectedLanguageId] = useState<LanguagePackId>(DEFAULT_LANGUAGE_ID);
   const [showVirtualKeyboard, setShowVirtualKeyboard] = useState(true);
   const [showPlayControls, setShowPlayControls] = useState(false);
@@ -90,6 +100,7 @@ export function TypingGame() {
   const mutedRef = useRef(isMuted);
   const paletteRef = useRef(INITIAL_PALETTE);
   const selectedLanguagePack = getLanguagePackById(selectedLanguageId);
+  const colorLearningContent = getColorLearningContent(selectedLanguageId);
 
   const canSpeak = useSyncExternalStore(
     subscribeToNoop,
@@ -113,35 +124,84 @@ export function TypingGame() {
     mutedRef.current = isMuted;
   }, [isMuted]);
 
-  async function activateResolvedKey(resolvedKey: ResolvedLanguageKey) {
-    const nextPalette = getRandomDifferentItem(PALETTES, paletteRef.current);
+  function getPackSpeechLang(languageId: LanguagePackId): string {
+    const languagePack = getLanguagePackById(languageId);
 
-    paletteRef.current = nextPalette;
+    return languagePack.voice.type === "speech-synthesis"
+      ? languagePack.voice.lang
+      : languagePack.voice.fallback?.lang ?? "en-US";
+  }
+
+  function getIdleDisplayDirection(
+    nextLearningMode: LearningMode,
+    languageId: LanguagePackId
+  ): "ltr" | "rtl" {
+    if (nextLearningMode === "colors") {
+      return getColorLearningContent(languageId).direction;
+    }
+
+    return getLanguagePackById(languageId).direction;
+  }
+
+  async function activateDisplayItem(item: {
+    displayText: string;
+    speechText: string;
+    speechLang: string;
+    textDirection: "ltr" | "rtl";
+    assetKey: string;
+    activeItemId: string;
+    previewColor?: string | null;
+    rotatePalette?: boolean;
+  }) {
+    const shouldRotatePalette = item.rotatePalette ?? true;
+    const nextPalette = shouldRotatePalette
+      ? getRandomDifferentItem(PALETTES, paletteRef.current)
+      : paletteRef.current;
+
+    if (shouldRotatePalette) {
+      paletteRef.current = nextPalette;
+    }
 
     if (!mutedRef.current && canSpeak) {
       await speakWithVoice({
-        text: resolvedKey.speechText,
-        assetKey: resolvedKey.assetKey,
+        text: item.speechText,
+        assetKey: item.assetKey,
         voice: selectedLanguagePack.voice,
-        speechLang: resolvedKey.speechLang
+        speechLang: item.speechLang
       });
     }
 
     startTransition(() => {
       setGameState((currentState) => ({
-        displayText: resolvedKey.displayText,
-        speechText: resolvedKey.speechText,
-        displayDirection: resolvedKey.textDirection,
+        displayText: item.displayText,
+        speechText: item.speechText,
+        displayDirection: item.textDirection,
         emoji: getRandomItem(EMOJIS),
         message: getRandomItem(MESSAGES),
         palette: nextPalette,
         burstKey: currentState.burstKey + 1,
-        activeKeyValue: resolvedKey.value
+        activeItemId: item.activeItemId,
+        previewColor: item.previewColor ?? null
       }));
     });
   }
 
+  async function activateResolvedKey(resolvedKey: ResolvedLanguageKey) {
+    await activateDisplayItem({
+      displayText: resolvedKey.displayText,
+      speechText: resolvedKey.speechText,
+      speechLang: resolvedKey.speechLang,
+      textDirection: resolvedKey.textDirection,
+      assetKey: resolvedKey.assetKey,
+      activeItemId: resolvedKey.value
+    });
+  }
+
   const handleKeydown = useEffectEvent((event: KeyboardEvent) => {
+    if (learningMode !== "letters") {
+      return;
+    }
+
     if (shouldIgnoreShortcut(event)) {
       return;
     }
@@ -186,7 +246,7 @@ export function TypingGame() {
 
     setGameState((currentState) => ({
       ...INITIAL_STATE,
-      displayDirection: selectedLanguagePack.direction,
+      displayDirection: getIdleDisplayDirection(learningMode, selectedLanguageId),
       palette: currentState.palette,
       burstKey: currentState.burstKey + 1
     }));
@@ -201,7 +261,22 @@ export function TypingGame() {
     setSelectedLanguageId(languageId);
     setGameState((currentState) => ({
       ...INITIAL_STATE,
-      displayDirection: getLanguagePackById(languageId).direction,
+      displayDirection: getIdleDisplayDirection(learningMode, languageId),
+      palette: currentState.palette,
+      burstKey: currentState.burstKey + 1
+    }));
+  }
+
+  function handleLearningModeChange(nextLearningMode: LearningMode) {
+    if (nextLearningMode === learningMode) {
+      return;
+    }
+
+    stopVoicePlayback();
+    setLearningMode(nextLearningMode);
+    setGameState((currentState) => ({
+      ...INITIAL_STATE,
+      displayDirection: getIdleDisplayDirection(nextLearningMode, selectedLanguageId),
       palette: currentState.palette,
       burstKey: currentState.burstKey + 1
     }));
@@ -209,6 +284,21 @@ export function TypingGame() {
 
   function handleVirtualKeyPress(languageKey: LanguageKey) {
     void activateResolvedKey(resolveVirtualLanguageKey(selectedLanguagePack, languageKey));
+  }
+
+  function handleColorSelect(colorId: Parameters<typeof getColorOptionById>[0]) {
+    const resolvedColor = getColorOptionById(colorId, selectedLanguageId);
+
+    void activateDisplayItem({
+      displayText: resolvedColor.label,
+      speechText: resolvedColor.speechText,
+      speechLang: getPackSpeechLang(selectedLanguageId),
+      textDirection: resolvedColor.textDirection,
+      assetKey: resolvedColor.assetKey,
+      activeItemId: resolvedColor.id,
+      previewColor: resolvedColor.swatch,
+      rotatePalette: false
+    });
   }
 
   async function handleToggleFullscreen() {
@@ -230,10 +320,16 @@ export function TypingGame() {
       : "Voice ready"
     : "Voice unavailable";
 
-  const isImmersiveStage = !showVirtualKeyboard;
-  const shellLayoutClasses = showVirtualKeyboard
+  const showLettersKeyboard = learningMode === "letters" && showVirtualKeyboard;
+  const showColorPalette = learningMode === "colors";
+  const showInputPanel = showLettersKeyboard || showColorPalette;
+  const isImmersiveStage = !showInputPanel;
+  const shellLayoutClasses = showInputPanel
     ? "max-w-6xl gap-3 pt-17 sm:pt-19"
     : "max-w-4xl justify-center gap-5 pt-18 sm:pt-20";
+  const modeLabel = getLearningModeLabel(learningMode, selectedLanguageId);
+  const idlePrompt = learningMode === "colors" ? colorLearningContent.prompt : selectedLanguagePack.prompt;
+  const idleHint = learningMode === "colors" ? colorLearningContent.hint : selectedLanguagePack.hint;
 
   return (
     <main
@@ -244,6 +340,8 @@ export function TypingGame() {
         isOpen={isSettingsOpen}
         onToggle={() => setIsSettingsOpen((currentValue) => !currentValue)}
         onClose={() => setIsSettingsOpen(false)}
+        learningMode={learningMode}
+        onLearningModeChange={handleLearningModeChange}
         languagePack={selectedLanguagePack}
         onLanguageChange={handleLanguageChange}
         showVirtualKeyboard={showVirtualKeyboard}
@@ -279,15 +377,17 @@ export function TypingGame() {
           palette={gameState.palette}
           burstKey={gameState.burstKey}
           voiceStatus={voiceStatus}
+          modeLabel={modeLabel}
           languageLabel={selectedLanguagePack.label}
           languageNativeLabel={selectedLanguagePack.nativeLabel}
-          idlePrompt={selectedLanguagePack.prompt}
-          idleHint={selectedLanguagePack.hint}
+          idlePrompt={idlePrompt}
+          idleHint={idleHint}
           immersive={isImmersiveStage}
-          constrained={showVirtualKeyboard}
+          constrained={showInputPanel}
+          previewColor={gameState.previewColor}
         />
 
-        {showVirtualKeyboard ? (
+        {showInputPanel ? (
           <div className="flex flex-none flex-col gap-3">
             {showPlayControls ? (
               <ControlButtons
@@ -302,13 +402,24 @@ export function TypingGame() {
               />
             ) : null}
 
-            <VirtualKeyboard
-              languagePack={selectedLanguagePack}
-              onKeyPress={handleVirtualKeyPress}
-              palette={gameState.palette}
-              minimal
-              activeKeyValue={gameState.activeKeyValue}
-            />
+            {showLettersKeyboard ? (
+              <VirtualKeyboard
+                languagePack={selectedLanguagePack}
+                onKeyPress={handleVirtualKeyPress}
+                palette={gameState.palette}
+                minimal
+                activeKeyValue={gameState.activeItemId}
+              />
+            ) : null}
+
+            {showColorPalette ? (
+              <ColorPaletteBar
+                languagePackId={selectedLanguageId}
+                onColorSelect={handleColorSelect}
+                palette={gameState.palette}
+                activeColorId={gameState.activeItemId}
+              />
+            ) : null}
           </div>
         ) : showPlayControls ? (
           <ControlButtons

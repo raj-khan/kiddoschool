@@ -9,12 +9,14 @@ type BigKeyDisplayProps = {
   palette: Palette;
   burstKey: number;
   voiceStatus: string;
+  modeLabel: string;
   languageLabel: string;
   languageNativeLabel: string;
   idlePrompt: string;
   idleHint: string;
   immersive?: boolean;
   constrained?: boolean;
+  previewColor?: string | null;
 };
 
 export function BigKeyDisplay({
@@ -26,12 +28,14 @@ export function BigKeyDisplay({
   palette,
   burstKey,
   voiceStatus,
+  modeLabel,
   languageLabel,
   languageNativeLabel,
   idlePrompt,
   idleHint,
   immersive = false,
-  constrained = false
+  constrained = false,
+  previewColor = null
 }: BigKeyDisplayProps) {
   const isIdle = displayText === null;
   const displayTextClasses = displayText
@@ -84,6 +88,15 @@ export function BigKeyDisplay({
                 color: palette.badgeText
               }}
             >
+              {modeLabel}
+            </span>
+            <span
+              className="rounded-full px-3 py-2"
+              style={{
+                background: palette.badgeSurface,
+                color: palette.badgeText
+              }}
+            >
               {languageLabel}
             </span>
             <span
@@ -129,7 +142,16 @@ export function BigKeyDisplay({
             }}
             aria-hidden="true"
           >
-            {emoji}
+            {previewColor ? (
+              <div
+                className="relative h-[72%] w-[72%] overflow-hidden rounded-[1.2rem] border border-white/85 shadow-[inset_0_1px_6px_rgba(255,255,255,0.45)]"
+                style={{ background: previewColor }}
+              >
+                <div className="absolute inset-x-2 top-1.5 h-3 rounded-full bg-white/25 blur-sm" />
+              </div>
+            ) : (
+              emoji
+            )}
           </div>
 
           <div
