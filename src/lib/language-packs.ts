@@ -239,7 +239,7 @@ export const LANGUAGE_PACKS: readonly LanguagePack[] = [
     id: "arabic",
     label: "Arabic",
     nativeLabel: "العربية",
-    description: "A right-to-left starter pack for Arabic letters with a native space key.",
+    description: "A right-to-left letter learning pack covering all 28 Arabic letters from Alif to Ya.",
     direction: "rtl",
     prompt: "اضغط أي مفتاح أو انقر على لوحة المفاتيح العربية.",
     hint: "انقر على الحروف العربية أو استخدم تخطيط لوحة مفاتيح عربي.",
@@ -281,14 +281,6 @@ export const LANGUAGE_PACKS: readonly LanguagePack[] = [
         key("ه", { name: "Ha",    speechText: "Ha",    assetKey: "26" }),
         key("و", { name: "Waw",   speechText: "Waw",   assetKey: "27" }),
         key("ي", { name: "Ya",    speechText: "Ya",    assetKey: "28" })
-      ],
-      [
-        key(" ", {
-          label: "Space",
-          displayText: "Space",
-          speechText: "space",
-          size: "full"
-        })
       ]
     ]
   },
@@ -296,7 +288,7 @@ export const LANGUAGE_PACKS: readonly LanguagePack[] = [
     id: "bengali",
     label: "Bengali",
     nativeLabel: "বাংলা",
-    description: "A Bengali starter pack with vowels, consonants, and a wide native space key.",
+    description: "A Bengali letter learning pack with vowels and consonants.",
     direction: "ltr",
     prompt: "ক্লিক করো।",
     hint: "বাংলা কীগুলোতে ক্লিক করো",
@@ -354,13 +346,6 @@ export const LANGUAGE_PACKS: readonly LanguagePack[] = [
         key("হ")
       ],
       [
-        key(" ", {
-          label: "স্পেস",
-          displayText: "স্পেস",
-          speechText: "স্পেস",
-          assetKey: "space",
-          size: "full"
-        })
       ]
     ]
   }
