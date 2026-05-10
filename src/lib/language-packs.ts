@@ -28,6 +28,7 @@ export type VoiceConfig = SpeechSynthesisVoiceConfig | AudioFilesVoiceConfig;
 export type LanguageKey = {
   value: string;
   label?: string;
+  name?: string;
   displayText?: string;
   speechText?: string;
   speechLang?: string;
@@ -246,48 +247,47 @@ export const LANGUAGE_PACKS: readonly LanguagePack[] = [
     allowGenericInput: false,
     rows: [
       [
-        key("ا", { assetKey: "1" }),
-        key("ب", { assetKey: "2" }),
-        key("ت", { assetKey: "3" }),
-        key("ث", { assetKey: "4" }),
-        key("ج", { assetKey: "5" }),
-        key("ح", { assetKey: "6" }),
-        key("خ", { assetKey: "7" })
+        key("ا", { name: "Alif",  speechText: "Alif",  assetKey: "1"  }),
+        key("ب", { name: "Ba",    speechText: "Ba",    assetKey: "2"  }),
+        key("ت", { name: "Ta",    speechText: "Ta",    assetKey: "3"  }),
+        key("ث", { name: "Tha",   speechText: "Tha",   assetKey: "4"  }),
+        key("ج", { name: "Jim",   speechText: "Jim",   assetKey: "5"  }),
+        key("ح", { name: "Ha",    speechText: "Ha",    assetKey: "6"  }),
+        key("خ", { name: "Kha",   speechText: "Kha",   assetKey: "7"  })
       ],
       [
-        key("د", { assetKey: "8" }),
-        key("ذ", { assetKey: "9" }),
-        key("ر", { assetKey: "10" }),
-        key("ز", { assetKey: "11" }),
-        key("س", { assetKey: "12" }),
-        key("ش", { assetKey: "13" }),
-        key("ص", { assetKey: "14" })
+        key("د", { name: "Dal",   speechText: "Dal",   assetKey: "8"  }),
+        key("ذ", { name: "Dhal",  speechText: "Dhal",  assetKey: "9"  }),
+        key("ر", { name: "Ra",    speechText: "Ra",    assetKey: "10" }),
+        key("ز", { name: "Zay",   speechText: "Zay",   assetKey: "11" }),
+        key("س", { name: "Sin",   speechText: "Sin",   assetKey: "12" }),
+        key("ش", { name: "Shin",  speechText: "Shin",  assetKey: "13" }),
+        key("ص", { name: "Sad",   speechText: "Sad",   assetKey: "14" })
       ],
       [
-        key("ض", { assetKey: "15" }),
-        key("ط", { assetKey: "16" }),
-        key("ظ", { assetKey: "17" }),
-        key("ع", { assetKey: "18" }),
-        key("غ", { assetKey: "19" }),
-        key("ف", { assetKey: "20" }),
-        key("ق", { assetKey: "21" })
+        key("ض", { name: "Dad",   speechText: "Dad",   assetKey: "15" }),
+        key("ط", { name: "Taa",   speechText: "Taa",   assetKey: "16" }),
+        key("ظ", { name: "Dha",   speechText: "Dha",   assetKey: "17" }),
+        key("ع", { name: "Ain",   speechText: "Ain",   assetKey: "18" }),
+        key("غ", { name: "Ghain", speechText: "Ghain", assetKey: "19" }),
+        key("ف", { name: "Fa",    speechText: "Fa",    assetKey: "20" }),
+        key("ق", { name: "Qaf",   speechText: "Qaf",   assetKey: "21" })
       ],
       [
-        key("ك", { assetKey: "22" }),
-        key("ل", { assetKey: "23" }),
-        key("م", { assetKey: "24" }),
-        key("ن", { assetKey: "25" }),
-        key("ه", { assetKey: "26" }),
-        key("و", { assetKey: "27" }),
-        key("ي", { assetKey: "28" })
+        key("ك", { name: "Kaf",   speechText: "Kaf",   assetKey: "22" }),
+        key("ل", { name: "Lam",   speechText: "Lam",   assetKey: "23" }),
+        key("م", { name: "Mim",   speechText: "Mim",   assetKey: "24" }),
+        key("ن", { name: "Nun",   speechText: "Nun",   assetKey: "25" }),
+        key("ه", { name: "Ha",    speechText: "Ha",    assetKey: "26" }),
+        key("و", { name: "Waw",   speechText: "Waw",   assetKey: "27" }),
+        key("ي", { name: "Ya",    speechText: "Ya",    assetKey: "28" })
       ],
       [
         key(" ", {
-          label: "مسافة",
-          displayText: "مسافة",
-          speechText: "مسافة",
-          size: "full",
-          textDirection: "rtl"
+          label: "Space",
+          displayText: "Space",
+          speechText: "space",
+          size: "full"
         })
       ]
     ]

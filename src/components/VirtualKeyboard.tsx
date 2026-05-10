@@ -116,7 +116,14 @@ export function VirtualKeyboard({
                   }}
                   aria-pressed={isActive}
                 >
-                  {languageKey.label ?? languageKey.displayText ?? languageKey.value}
+                  {languageKey.name ? (
+                    <span className="flex flex-col items-center gap-0.5 leading-none">
+                      <span>{languageKey.label ?? languageKey.value}</span>
+                      <span className="font-body text-[9px] font-semibold tracking-wide opacity-65">{languageKey.name}</span>
+                    </span>
+                  ) : (
+                    languageKey.label ?? languageKey.displayText ?? languageKey.value
+                  )}
                 </button>
               );
             })}
