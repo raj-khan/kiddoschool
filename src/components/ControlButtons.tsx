@@ -8,6 +8,7 @@ type ControlButtonsProps = {
   onClear: () => void;
   onToggleFullscreen: () => void;
   palette: Palette;
+  compact?: boolean;
 };
 
 type ActionButtonProps = {
@@ -15,15 +16,22 @@ type ActionButtonProps = {
   onClick: () => void;
   palette: Palette;
   disabled?: boolean;
+  compact?: boolean;
 };
 
-function ActionButton({ label, onClick, palette, disabled = false }: ActionButtonProps) {
+function ActionButton({
+  label,
+  onClick,
+  palette,
+  disabled = false,
+  compact = false
+}: ActionButtonProps) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="min-h-14 rounded-[1.4rem] border px-4 py-3 text-sm font-extrabold uppercase tracking-[0.22em] transition duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-55"
+      className={`${compact ? "min-h-11 rounded-full px-4 py-2 text-xs tracking-[0.18em]" : "min-h-14 rounded-[1.4rem] px-4 py-3 text-sm tracking-[0.22em]"} border font-extrabold uppercase transition duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-55`}
       style={{
         background: palette.buttonSurface,
         borderColor: palette.buttonBorder,
@@ -42,8 +50,38 @@ export function ControlButtons({
   onToggleMute,
   onClear,
   onToggleFullscreen,
-  palette
+  palette,
+  compact = false
 }: ControlButtonsProps) {
+  if (compact) {
+    return (
+      <section
+        className="rounded-full border p-2 shadow-[0_18px_50px_rgba(255,255,255,0.2)] backdrop-blur-xl"
+        style={{
+          background: palette.shell,
+          borderColor: palette.shellBorder
+        }}
+      >
+        <div className="flex flex-wrap justify-center gap-2">
+          <ActionButton
+            label={isMuted ? "Unmute" : "Mute"}
+            onClick={onToggleMute}
+            palette={palette}
+            compact
+          />
+          <ActionButton label="Clear" onClick={onClear} palette={palette} compact />
+          <ActionButton
+            label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+            onClick={onToggleFullscreen}
+            palette={palette}
+            disabled={!canFullscreen}
+            compact
+          />
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
       className="rounded-[2rem] border p-4 shadow-[0_22px_60px_rgba(255,255,255,0.18)] backdrop-blur-xl"

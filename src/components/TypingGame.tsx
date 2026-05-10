@@ -4,8 +4,7 @@ import { startTransition, useEffect, useEffectEvent, useRef, useState, useSyncEx
 
 import { BigKeyDisplay } from "@/components/BigKeyDisplay";
 import { ControlButtons } from "@/components/ControlButtons";
-import { LanguageSelector } from "@/components/LanguageSelector";
-import { RecentKeys } from "@/components/RecentKeys";
+import { ParentSettings } from "@/components/ParentSettings";
 import { VirtualKeyboard } from "@/components/VirtualKeyboard";
 import {
   EMOJIS,
@@ -22,7 +21,7 @@ import {
 } from "@/lib/language-packs";
 import { getRandomDifferentItem, getRandomItem } from "@/lib/random";
 import { resolveLanguageInput, resolveVirtualLanguageKey, type ResolvedLanguageKey } from "@/lib/resolveLanguageKey";
-import { canUseSpeechSynthesis, isVoicePlaybackAvailable, speakWithVoice, stopVoicePlayback } from "@/lib/voice";
+import { isVoicePlaybackAvailable, speakWithVoice, stopVoicePlayback } from "@/lib/voice";
 
 type GameState = {
   displayText: string | null;
@@ -32,11 +31,6 @@ type GameState = {
   message: string;
   palette: Palette;
   burstKey: number;
-};
-
-type RecentKeyEntry = {
-  label: string;
-  direction: "ltr" | "rtl";
 };
 
 const INITIAL_PALETTE = PALETTES[0];
@@ -85,19 +79,15 @@ function shouldIgnoreShortcut(event: KeyboardEvent): boolean {
 
 export function TypingGame() {
   const [gameState, setGameState] = useState(INITIAL_STATE);
-  const [recentKeys, setRecentKeys] = useState<RecentKeyEntry[]>([]);
   const [isMuted, setIsMuted] = useState(false);
   const [selectedLanguageId, setSelectedLanguageId] = useState<LanguagePackId>(DEFAULT_LANGUAGE_ID);
+  const [showVirtualKeyboard, setShowVirtualKeyboard] = useState(true);
+  const [showPlayControls, setShowPlayControls] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const mutedRef = useRef(isMuted);
   const paletteRef = useRef(INITIAL_PALETTE);
   const selectedLanguagePack = getLanguagePackById(selectedLanguageId);
-
-  const hasSpeechSynthesis = useSyncExternalStore(
-    subscribeToNoop,
-    () => canUseSpeechSynthesis(),
-    () => false
-  );
 
   const canSpeak = useSyncExternalStore(
     subscribeToNoop,
@@ -145,14 +135,6 @@ export function TypingGame() {
         palette: nextPalette,
         burstKey: currentState.burstKey + 1
       }));
-
-      setRecentKeys((currentKeys) => [
-        {
-          label: resolvedKey.displayText,
-          direction: resolvedKey.textDirection
-        },
-        ...currentKeys
-      ].slice(0, 10));
     });
   }
 
@@ -205,7 +187,6 @@ export function TypingGame() {
       palette: currentState.palette,
       burstKey: currentState.burstKey + 1
     }));
-    setRecentKeys([]);
   }
 
   function handleLanguageChange(languageId: LanguagePackId) {
@@ -221,7 +202,6 @@ export function TypingGame() {
       palette: currentState.palette,
       burstKey: currentState.burstKey + 1
     }));
-    setRecentKeys([]);
   }
 
   function handleVirtualKeyPress(languageKey: LanguageKey) {
@@ -247,11 +227,29 @@ export function TypingGame() {
       : "Voice ready"
     : "Voice unavailable";
 
+  const isImmersiveStage = !showVirtualKeyboard;
+  const shellLayoutClasses = showVirtualKeyboard
+    ? "max-w-6xl gap-3 pt-17 sm:pt-19"
+    : "max-w-4xl justify-center gap-5 pt-18 sm:pt-20";
+
   return (
     <main
-      className="relative min-h-[100svh] overflow-hidden px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6"
+      className="relative h-[100svh] overflow-hidden px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6"
       style={{ background: gameState.palette.background }}
     >
+      <ParentSettings
+        isOpen={isSettingsOpen}
+        onToggle={() => setIsSettingsOpen((currentValue) => !currentValue)}
+        onClose={() => setIsSettingsOpen(false)}
+        languagePack={selectedLanguagePack}
+        onLanguageChange={handleLanguageChange}
+        showVirtualKeyboard={showVirtualKeyboard}
+        onToggleVirtualKeyboard={() => setShowVirtualKeyboard((currentValue) => !currentValue)}
+        showPlayControls={showPlayControls}
+        onTogglePlayControls={() => setShowPlayControls((currentValue) => !currentValue)}
+        palette={gameState.palette}
+      />
+
       <div
         className="floating-orb left-[-4rem] top-[-2rem] h-48 w-48 sm:h-60 sm:w-60"
         style={{ background: gameState.palette.orbOne }}
@@ -268,7 +266,7 @@ export function TypingGame() {
         aria-hidden="true"
       />
 
-      <div className="mx-auto grid min-h-[calc(100svh-2rem)] max-w-7xl items-start gap-5 lg:grid-cols-[minmax(0,1.35fr)_28rem]">
+      <div className={`mx-auto flex h-full w-full min-h-0 flex-col ${shellLayoutClasses}`}>
         <BigKeyDisplay
           displayText={gameState.displayText}
           speechText={gameState.speechText}
@@ -282,19 +280,33 @@ export function TypingGame() {
           languageNativeLabel={selectedLanguagePack.nativeLabel}
           idlePrompt={selectedLanguagePack.prompt}
           idleHint={selectedLanguagePack.hint}
+          immersive={isImmersiveStage}
+          constrained={showVirtualKeyboard}
         />
 
-        <aside className="flex flex-col gap-5">
-          <LanguageSelector
-            languagePack={selectedLanguagePack}
-            onChange={handleLanguageChange}
-            palette={gameState.palette}
-          />
-          <VirtualKeyboard
-            languagePack={selectedLanguagePack}
-            onKeyPress={handleVirtualKeyPress}
-            palette={gameState.palette}
-          />
+        {showVirtualKeyboard ? (
+          <div className="flex flex-none flex-col gap-3">
+            {showPlayControls ? (
+              <ControlButtons
+                isMuted={isMuted}
+                isFullscreen={isFullscreen}
+                canFullscreen={canFullscreen}
+                onToggleMute={handleToggleMute}
+                onClear={handleClear}
+                onToggleFullscreen={handleToggleFullscreen}
+                palette={gameState.palette}
+                compact
+              />
+            ) : null}
+
+            <VirtualKeyboard
+              languagePack={selectedLanguagePack}
+              onKeyPress={handleVirtualKeyPress}
+              palette={gameState.palette}
+              minimal
+            />
+          </div>
+        ) : showPlayControls ? (
           <ControlButtons
             isMuted={isMuted}
             isFullscreen={isFullscreen}
@@ -303,38 +315,9 @@ export function TypingGame() {
             onClear={handleClear}
             onToggleFullscreen={handleToggleFullscreen}
             palette={gameState.palette}
+            compact
           />
-          <RecentKeys keys={recentKeys} palette={gameState.palette} />
-          <section
-            className="rounded-[2rem] border p-4 shadow-[0_22px_60px_rgba(255,255,255,0.18)] backdrop-blur-xl"
-            style={{
-              background: gameState.palette.shell,
-              borderColor: gameState.palette.shellBorder
-            }}
-          >
-            <p
-              className="font-display text-2xl tracking-[-0.04em]"
-              style={{ color: gameState.palette.keyText }}
-            >
-              Open source plan
-            </p>
-            <p className="mt-2 text-sm font-bold leading-6" style={{ color: gameState.palette.detailText }}>
-              English, Numbers, Arabic, and Bengali are the starter packs.
-            </p>
-            <p className="mt-4 text-sm font-bold leading-6" style={{ color: gameState.palette.detailText }}>
-              Later, each language can move from browser speech to real kid voice assets through the shared voice layer.
-            </p>
-            <p className="mt-4 text-sm font-bold leading-6" style={{ color: gameState.palette.detailText }}>
-              Contributors can add new layouts in <code>src/lib/language-packs.ts</code> and follow the root
-              contribution guide.
-            </p>
-            {!hasSpeechSynthesis ? (
-              <p className="mt-4 text-sm font-bold leading-6" style={{ color: gameState.palette.detailText }}>
-                This browser does not expose speech synthesis, so future audio-file voices will be the best fallback.
-              </p>
-            ) : null}
-          </section>
-        </aside>
+        ) : null}
       </div>
     </main>
   );
