@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@fontsource/fredoka':
+        specifier: ^5.2.10
+        version: 5.2.10
       next:
         specifier: ^16.1.6
         version: 16.2.6(@babel/core@7.29.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -312,6 +315,9 @@ packages:
 
   '@fontsource/baloo-2@5.2.7':
     resolution: {integrity: sha512-RllEWCvjw0PqLey6hbNI2M8gdZy2CFCIHXXNIXC4V4xsRQeOgZ3OMx3uQ1u4LjJ16BGytZD6wE/VFU9st0VdDg==}
+
+  '@fontsource/fredoka@5.2.10':
+    resolution: {integrity: sha512-DyzPCmTf0PkBbAu+gNvnPzfD/dYIXlyp+Zcb76jEQyt/vmRKGZgkH8FFF9W2sICDaA5p+GLk1XGFjWh5PPX+lg==}
 
   '@fontsource/nunito@5.2.7':
     resolution: {integrity: sha512-pmtBq0H9ex9nk+RtJYEJOD9pag393iHETnl/PVKleF4i06cd0ttngK5ZCTgYb5eOqR3Xdlrjtev8m7bmgYprew==}
@@ -2690,6 +2696,8 @@ snapshots:
       levn: 0.4.1
 
   '@fontsource/baloo-2@5.2.7': {}
+
+  '@fontsource/fredoka@5.2.10': {}
 
   '@fontsource/nunito@5.2.7': {}
 

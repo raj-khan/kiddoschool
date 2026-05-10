@@ -40,7 +40,7 @@ export function RecentKeys({ keys, palette }: RecentKeysProps) {
           {keys.map((key, index) => (
             <li
               key={`${key.label}-${index}`}
-              className="min-w-16 rounded-[1.3rem] px-4 py-3 text-center font-display text-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]"
+              className="min-w-16 rounded-[1.3rem] px-4 py-3 text-center font-display text-2xl shadow-[0_4px_0_rgba(45,48,71,0.14),inset_0_1px_0_rgba(255,255,255,0.5)]"
               style={{
                 background: palette.historySurface,
                 color: palette.historyText

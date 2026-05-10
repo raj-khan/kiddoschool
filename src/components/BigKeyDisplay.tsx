@@ -229,7 +229,9 @@ export function BigKeyDisplay({
               className={`relative z-10 font-display ${displayTextClasses} leading-[0.82] tracking-[-0.08em]`}
               style={{
                 color: palette.keyText,
-                textShadow: `0 18px 55px ${palette.keyShadow}`
+                textShadow: displayText
+                  ? `0 3px 0 ${palette.activeKeyBorder}, 0 6px 0 ${palette.activeKeyBorder}, 0 9px 0 ${palette.activeKeyBorder}, 0 12px 16px rgba(0,0,0,0.08)`
+                  : `0 18px 55px ${palette.keyShadow}`
               }}
               dir={displayDirection}
             >

@@ -31,7 +31,7 @@ function ActionButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`${compact ? "min-h-11 rounded-full px-4 py-2 text-xs tracking-[0.18em]" : "min-h-14 rounded-[1.4rem] px-4 py-3 text-sm tracking-[0.22em]"} border font-extrabold uppercase transition duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-55`}
+      className={`${compact ? "min-h-11 rounded-full px-4 py-2 text-xs tracking-[0.18em]" : "min-h-14 rounded-[1.4rem] px-4 py-3 text-sm tracking-[0.22em]"} border font-extrabold uppercase shadow-[0_4px_0_rgba(45,48,71,0.14),0_8px_18px_rgba(45,48,71,0.06)] transition duration-150 hover:-translate-y-px active:translate-y-0.5 active:shadow-[0_1px_0_rgba(45,48,71,0.14)] disabled:cursor-not-allowed disabled:opacity-55 disabled:shadow-none`}
       style={{
         background: palette.buttonSurface,
         borderColor: palette.buttonBorder,

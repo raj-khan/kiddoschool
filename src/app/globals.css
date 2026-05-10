@@ -1,6 +1,7 @@
-@import "@fontsource/baloo-2/600.css";
-@import "@fontsource/baloo-2/700.css";
-@import "@fontsource/baloo-2/800.css";
+@import "@fontsource/fredoka/400.css";
+@import "@fontsource/fredoka/500.css";
+@import "@fontsource/fredoka/600.css";
+@import "@fontsource/fredoka/700.css";
 @import "@fontsource/nunito/400.css";
 @import "@fontsource/nunito/600.css";
 @import "@fontsource/nunito/700.css";
@@ -8,8 +9,11 @@
 @import "tailwindcss";
 
 :root {
-  --app-background: #fff7ef;
-  --app-foreground: #17324d;
+  --app-background: #faf7f2;
+  --app-foreground: #2d3047;
+  --ink: #2d3047;
+  --ink-soft: #6b6580;
+  --ink-mute: #8a8499;
 }
 
 html {
@@ -35,7 +39,7 @@ body {
 }
 
 .font-display {
-  font-family: "Baloo 2", "Trebuchet MS", ui-rounded, system-ui, sans-serif;
+  font-family: "Fredoka", "Baloo 2", ui-rounded, system-ui, sans-serif;
 }
 
 .play-surface {
