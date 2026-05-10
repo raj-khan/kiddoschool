@@ -385,6 +385,8 @@ export function TypingGame() {
   const isImmersiveStage = !showInputPanel;
   const shellLayoutClasses = showNumberBoard
     ? "max-w-7xl gap-3 pt-17 sm:pt-19"
+    : showComputerKeyboard
+      ? "max-w-7xl gap-3 pt-17 sm:pt-19"
     : showInputPanel
       ? "max-w-6xl gap-3 pt-17 sm:pt-19"
       : "max-w-4xl justify-center gap-5 pt-18 sm:pt-20";
@@ -402,7 +404,12 @@ export function TypingGame() {
         ? `The number board is set to 1 through ${numberRangeMax}, and symbols stay in Computer mode.`
         : activeLanguagePack.hint;
   const activeEnglishLetter =
-    gameState.activeItemId && /^[a-z]$/i.test(gameState.activeItemId) ? gameState.activeItemId : null;
+    learningMode === "letters" &&
+    selectedLanguageId === "english" &&
+    gameState.activeItemId &&
+    /^[a-z]$/i.test(gameState.activeItemId)
+      ? gameState.activeItemId
+      : null;
   const floatingEchoText =
     learningMode === "computer" && gameState.displayText
       ? gameState.displayText.length <= 10
@@ -512,6 +519,46 @@ export function TypingGame() {
               </div>
             </div>
           </>
+        ) : showComputerKeyboard ? (
+          <>
+            {controls}
+
+            <div className="flex min-h-0 flex-1 flex-col gap-3 lg:flex-row">
+              <div className="flex-none lg:min-h-0 lg:w-[36%] xl:w-[34%]">
+                <BigKeyDisplay
+                  displayText={gameState.displayText}
+                  speechText={gameState.speechText}
+                  displayDirection={gameState.displayDirection}
+                  emoji={gameState.emoji}
+                  message={gameState.message}
+                  palette={gameState.palette}
+                  burstKey={gameState.burstKey}
+                  voiceStatus={voiceStatus}
+                  modeLabel={modeLabel}
+                  languageLabel={activeLanguagePack.label}
+                  languageNativeLabel={activeLanguagePack.nativeLabel}
+                  idlePrompt={idlePrompt}
+                  idleHint={idleHint}
+                  immersive={false}
+                  constrained
+                  previewColor={gameState.previewColor}
+                  activeEnglishLetter={null}
+                  floatingEchoText={floatingEchoText}
+                />
+              </div>
+
+              <div className="min-h-0 flex-1">
+                <VirtualKeyboard
+                  languagePack={activeLanguagePack}
+                  onKeyPress={handleVirtualKeyPress}
+                  palette={gameState.palette}
+                  minimal
+                  dense
+                  activeKeyValue={gameState.activeItemId}
+                />
+              </div>
+            </div>
+          </>
         ) : (
           <>
             <BigKeyDisplay
@@ -545,6 +592,7 @@ export function TypingGame() {
                     onKeyPress={handleVirtualKeyPress}
                     palette={gameState.palette}
                     minimal
+                    dense={false}
                     activeKeyValue={gameState.activeItemId}
                   />
                 ) : null}
