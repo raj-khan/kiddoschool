@@ -12,6 +12,7 @@ export type AudioFilesVoiceConfig = {
   type: "audio-files";
   basePath: string;
   extension?: "mp3" | "wav" | "ogg";
+  manifestPath?: string;
   fallback?: SpeechSynthesisVoiceConfig;
 };
 
@@ -57,6 +58,13 @@ const ENGLISH_VOICE: SpeechSynthesisVoiceConfig = {
   volume: 1
 };
 
+const ENGLISH_COMMUNITY_VOICE: AudioFilesVoiceConfig = {
+  type: "audio-files",
+  basePath: "/audio/english-community-v1",
+  manifestPath: "/audio/english-community-v1/manifest.json",
+  fallback: ENGLISH_VOICE
+};
+
 const ARABIC_VOICE: SpeechSynthesisVoiceConfig = {
   type: "speech-synthesis",
   lang: "ar",
@@ -82,7 +90,7 @@ export const LANGUAGE_PACKS: readonly LanguagePack[] = [
     direction: "ltr",
     prompt: "Press any key or click the English keyboard.",
     hint: "Letters, numbers, Space, Enter, and punctuation all work.",
-    voice: ENGLISH_VOICE,
+    voice: ENGLISH_COMMUNITY_VOICE,
     rows: [
       [
         key("1", { label: "1", assetKey: "one" }),
@@ -151,7 +159,7 @@ export const LANGUAGE_PACKS: readonly LanguagePack[] = [
     direction: "ltr",
     prompt: "Count with clicks or number keys.",
     hint: "Use the number row on the keyboard or click the big number buttons.",
-    voice: ENGLISH_VOICE,
+    voice: ENGLISH_COMMUNITY_VOICE,
     rows: [
       [
         key("1", { label: "1", assetKey: "one" }),

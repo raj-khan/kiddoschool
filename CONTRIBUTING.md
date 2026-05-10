@@ -50,15 +50,31 @@ Each key can define:
 
 ## Voice architecture
 
-Today, all packs use browser speech synthesis through `src/lib/voice.ts`.
+Today, Arabic and Bengali use browser speech synthesis through `src/lib/voice.ts`.
 
-The voice layer already supports a future `audio-files` mode, so a pack can later switch to real open-source child voice assets without changing the game loop. The intended path is:
+English and Numbers are now wired for an optional community audio pack:
+
+- audio folder: `public/audio/english-community-v1/`
+- manifest: `public/audio/english-community-v1/manifest.json`
+- fallback: browser speech synthesis when a listed asset is missing
+
+The voice layer supports `audio-files` mode, so a pack can move to real open-source child voice assets without changing the game loop.
+
+## Adding a community voice pack
+
+For the current English community pack:
+
+1. Add real child voice clips under `public/audio/english-community-v1/`
+2. Name each file from its `assetKey`, for example `a.mp3`, `one.mp3`, `space.mp3`, or `color-red.mp3`
+3. Add those same keys to `manifest.json` under `assetKeys`
+4. Keep clips short, dry, and at consistent volume
+5. Confirm the app plays the file instead of the browser voice
+
+The intended rollout is:
 
 1. Start with English voice assets.
-2. Store them under a predictable public path.
-3. Point the English pack's `voice` config at those files.
-4. Add matching `assetKey` values for every spoken key.
-5. Expand the same pattern to Arabic, Bengali, numbers, and future community packs.
+2. Cover letters first, then numbers, punctuation, and colors.
+3. Expand the same pattern to Arabic, Bengali, and future community packs.
 
 ## Pull request scope
 

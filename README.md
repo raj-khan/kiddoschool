@@ -55,8 +55,8 @@ src/
 
 - `LICENSE` uses MIT so contributors can extend the project.
 - New languages should be added as language packs in `src/lib/language-packs.ts`.
-- The current voice layer uses browser speech synthesis first.
-- Future real voice assets should start with English, then expand to other packs through the shared voice abstraction in `src/lib/voice.ts`.
+- English and Numbers now support an optional community voice-pack path in `public/audio/english-community-v1/`, with browser speech as fallback.
+- Future real child voice assets should start with English, then expand to other packs through the shared voice abstraction in `src/lib/voice.ts`.
 - The language-pack rows are already filterable so future parent controls can show either a full keyboard or only selected weak letters.
 
 ## Local testing
