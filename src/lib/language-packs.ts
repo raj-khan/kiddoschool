@@ -174,12 +174,17 @@ const ENGLISH_COMPUTER_ROWS = [
   ]
 ] as const;
 
-const ARABIC_VOICE: SpeechSynthesisVoiceConfig = {
-  type: "speech-synthesis",
-  lang: "ar",
-  rate: 0.92,
-  pitch: 1.02,
-  volume: 1
+const ARABIC_VOICE: AudioFilesVoiceConfig = {
+  type: "audio-files",
+  basePath: "/audio/arabic-letters",
+  extension: "mp3",
+  fallback: {
+    type: "speech-synthesis",
+    lang: "ar",
+    rate: 0.92,
+    pitch: 1.02,
+    volume: 1
+  }
 };
 
 const BENGALI_VOICE: SpeechSynthesisVoiceConfig = {
@@ -241,50 +246,46 @@ export const LANGUAGE_PACKS: readonly LanguagePack[] = [
     allowGenericInput: false,
     rows: [
       [
-        key("ض"),
-        key("ص"),
-        key("ث"),
-        key("ق"),
-        key("ف"),
-        key("غ"),
-        key("ع"),
-        key("ه"),
-        key("خ"),
-        key("ح"),
-        key("ج"),
-        key("د")
+        key("ا", { assetKey: "1" }),
+        key("ب", { assetKey: "2" }),
+        key("ت", { assetKey: "3" }),
+        key("ث", { assetKey: "4" }),
+        key("ج", { assetKey: "5" }),
+        key("ح", { assetKey: "6" }),
+        key("خ", { assetKey: "7" })
       ],
       [
-        key("ش"),
-        key("س"),
-        key("ي"),
-        key("ب"),
-        key("ل"),
-        key("ا"),
-        key("ت"),
-        key("ن"),
-        key("م"),
-        key("ك"),
-        key("ط")
+        key("د", { assetKey: "8" }),
+        key("ذ", { assetKey: "9" }),
+        key("ر", { assetKey: "10" }),
+        key("ز", { assetKey: "11" }),
+        key("س", { assetKey: "12" }),
+        key("ش", { assetKey: "13" }),
+        key("ص", { assetKey: "14" })
       ],
       [
-        key("ئ"),
-        key("ء"),
-        key("ؤ"),
-        key("ر"),
-        key("لا"),
-        key("ى"),
-        key("ة"),
-        key("و"),
-        key("ز"),
-        key("ظ")
+        key("ض", { assetKey: "15" }),
+        key("ط", { assetKey: "16" }),
+        key("ظ", { assetKey: "17" }),
+        key("ع", { assetKey: "18" }),
+        key("غ", { assetKey: "19" }),
+        key("ف", { assetKey: "20" }),
+        key("ق", { assetKey: "21" })
+      ],
+      [
+        key("ك", { assetKey: "22" }),
+        key("ل", { assetKey: "23" }),
+        key("م", { assetKey: "24" }),
+        key("ن", { assetKey: "25" }),
+        key("ه", { assetKey: "26" }),
+        key("و", { assetKey: "27" }),
+        key("ي", { assetKey: "28" })
       ],
       [
         key(" ", {
           label: "مسافة",
           displayText: "مسافة",
           speechText: "مسافة",
-          assetKey: "space",
           size: "full",
           textDirection: "rtl"
         })
