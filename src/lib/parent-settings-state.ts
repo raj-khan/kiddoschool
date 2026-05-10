@@ -71,17 +71,22 @@ export function sanitizeParentSettingsState(value: unknown): ParentSettingsState
   };
 }
 
+let _cachedSettingsRaw: string | undefined;
+let _cachedSettingsSnapshot: ParentSettingsState = DEFAULT_PARENT_SETTINGS_STATE;
+
 export function loadParentSettingsState(): ParentSettingsState {
   if (typeof window === "undefined") {
     return DEFAULT_PARENT_SETTINGS_STATE;
   }
 
   try {
-    return (
-      sanitizeParentSettingsState(
-        JSON.parse(window.localStorage.getItem(PARENT_SETTINGS_STORAGE_KEY) ?? "null")
-      ) ?? DEFAULT_PARENT_SETTINGS_STATE
-    );
+    const raw = window.localStorage.getItem(PARENT_SETTINGS_STORAGE_KEY) ?? "null";
+    if (raw === _cachedSettingsRaw) {
+      return _cachedSettingsSnapshot;
+    }
+    _cachedSettingsRaw = raw;
+    _cachedSettingsSnapshot = sanitizeParentSettingsState(JSON.parse(raw)) ?? DEFAULT_PARENT_SETTINGS_STATE;
+    return _cachedSettingsSnapshot;
   } catch {
     return DEFAULT_PARENT_SETTINGS_STATE;
   }

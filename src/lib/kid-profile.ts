@@ -81,13 +81,22 @@ export function sanitizeKidProfile(value: unknown): KidProfile | null {
   };
 }
 
+let _cachedProfileRaw: string | undefined;
+let _cachedProfileSnapshot: KidProfile | null = null;
+
 export function loadKidProfile(): KidProfile | null {
   if (typeof window === "undefined") {
     return null;
   }
 
   try {
-    return sanitizeKidProfile(JSON.parse(window.localStorage.getItem(KID_PROFILE_STORAGE_KEY) ?? "null"));
+    const raw = window.localStorage.getItem(KID_PROFILE_STORAGE_KEY) ?? "null";
+    if (raw === _cachedProfileRaw) {
+      return _cachedProfileSnapshot;
+    }
+    _cachedProfileRaw = raw;
+    _cachedProfileSnapshot = sanitizeKidProfile(JSON.parse(raw));
+    return _cachedProfileSnapshot;
   } catch {
     return null;
   }
