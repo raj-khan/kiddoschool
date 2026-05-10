@@ -33,7 +33,7 @@ export function BigKeyDisplay({
 
   return (
     <section
-      className="play-surface stage-entrance flex min-h-[32rem] flex-1 flex-col justify-between rounded-[2.5rem] border px-5 py-5 shadow-[0_26px_80px_rgba(255,255,255,0.18)] backdrop-blur-xl sm:px-8 sm:py-7 lg:px-10 lg:py-8"
+      className="play-surface stage-entrance flex min-h-[32rem] self-start flex-col justify-between rounded-[2.5rem] border px-5 py-5 shadow-[0_26px_80px_rgba(255,255,255,0.18)] backdrop-blur-xl sm:px-8 sm:py-7 lg:px-10 lg:py-8"
       style={{
         background: palette.shell,
         borderColor: palette.shellBorder

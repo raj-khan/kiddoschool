@@ -268,7 +268,7 @@ export function TypingGame() {
         aria-hidden="true"
       />
 
-      <div className="mx-auto grid min-h-[calc(100svh-2rem)] max-w-7xl gap-5 lg:grid-cols-[minmax(0,1.35fr)_28rem]">
+      <div className="mx-auto grid min-h-[calc(100svh-2rem)] max-w-7xl items-start gap-5 lg:grid-cols-[minmax(0,1.35fr)_28rem]">
         <BigKeyDisplay
           displayText={gameState.displayText}
           speechText={gameState.speechText}
