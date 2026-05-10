@@ -178,44 +178,56 @@ export function ParentSettings({
 
       {isOpen ? (
         <div
-          className="fixed inset-0 z-40 bg-slate-950/18 backdrop-blur-[2px]"
+          className="fixed inset-0 z-40 bg-slate-950/22 backdrop-blur-[3px]"
           onClick={onClose}
           aria-hidden="true"
         >
           <aside
             id="parent-settings-panel"
-            className="absolute right-4 top-20 w-[min(92vw,28rem)] rounded-[2rem] border p-5 shadow-[0_30px_80px_rgba(15,35,57,0.22)] backdrop-blur-xl sm:right-6 sm:top-24"
+            className="absolute inset-x-3 bottom-3 top-20 flex flex-col overflow-hidden rounded-[2rem] border shadow-[0_30px_80px_rgba(15,35,57,0.22)] backdrop-blur-xl sm:inset-x-auto sm:bottom-auto sm:right-6 sm:top-24 sm:max-h-[calc(100svh-7.5rem)] sm:w-[min(92vw,28rem)]"
             style={{
               background: palette.shell,
               borderColor: palette.shellBorder
             }}
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="font-display text-3xl tracking-[-0.05em]" style={{ color: palette.keyText }}>
-                  Parent controls
-                </p>
-                <p className="mt-2 text-sm font-bold leading-6" style={{ color: palette.detailText }}>
-                  Keep the play screen simple for kids and leave the configuration work here.
-                </p>
+            <div
+              className="shrink-0 border-b px-5 pb-4 pt-3 sm:px-5 sm:pb-5 sm:pt-5"
+              style={{ borderColor: palette.shellBorder, background: palette.shell }}
+            >
+              <div
+                className="mx-auto mb-3 h-1.5 w-16 rounded-full sm:hidden"
+                style={{ background: palette.buttonBorder }}
+                aria-hidden="true"
+              />
+
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="font-display text-3xl tracking-[-0.05em]" style={{ color: palette.keyText }}>
+                    Parent controls
+                  </p>
+                  <p className="mt-2 text-sm font-bold leading-6" style={{ color: palette.detailText }}>
+                    Keep the play screen simple for kids and leave the configuration work here.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-full border text-xl font-bold transition hover:-translate-y-0.5"
+                  style={{
+                    background: palette.buttonSurface,
+                    borderColor: palette.buttonBorder,
+                    color: palette.buttonText
+                  }}
+                  aria-label="Close parent settings"
+                >
+                  ×
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={onClose}
-                className="grid h-10 w-10 place-items-center rounded-full border text-xl font-bold transition hover:-translate-y-0.5"
-                style={{
-                  background: palette.buttonSurface,
-                  borderColor: palette.buttonBorder,
-                  color: palette.buttonText
-                }}
-                aria-label="Close parent settings"
-              >
-                ×
-              </button>
             </div>
 
-            <div className="mt-5 space-y-4">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-5 pt-4 sm:px-5 sm:pb-5">
+              <div className="space-y-4">
               <LearningModeSelector
                 learningMode={learningMode}
                 onChange={onLearningModeChange}
@@ -399,6 +411,7 @@ export function ParentSettings({
                   Open contribute page
                 </Link>
               </div>
+            </div>
             </div>
           </aside>
         </div>
