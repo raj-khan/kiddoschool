@@ -1,0 +1,76 @@
+# {{PROJECT_NAME}}
+
+{{ONE_LINE_DESCRIPTION}}
+
+Repo:    {{REPO_URL}}
+Domain:  {{DOMAIN}}
+License: {{LICENSE}}
+
+## Stack
+
+- Language:        TypeScript 5, strict mode
+- Package manager: pnpm workspaces
+- Build:           Turborepo
+- Frontend:        Next.js 15 App Router
+- Styling:         Tailwind CSS
+- Database:        Supabase Postgres + Row Level Security
+- Validation:      Zod 3
+- Testing:         Vitest
+- Node:            >=20
+
+## Commands
+
+```bash
+pnpm install               # install all workspaces
+pnpm dev                   # start at localhost:3000
+pnpm build                 # build all packages + apps
+pnpm lint                  # lint all workspaces
+pnpm typecheck             # tsc across all packages
+pnpm test                  # run all Vitest tests
+```
+
+## Architecture
+
+```
+{{PACKAGE_STRUCTURE}}
+```
+
+Dependency graph (no cycles allowed):
+
+```
+{{DEPENDENCY_GRAPH}}
+```
+
+## Brand rules
+
+| What         | Correct           | Never use              |
+|--------------|-------------------|------------------------|
+| Product name | {{PROJECT_NAME}}  | {{WRONG_NAME_EXAMPLES}}|
+| Domain       | {{DOMAIN}}        | {{WRONG_DOMAIN}}       |
+| NPM scope    | @{{NPM_SCOPE}}    |                        |
+
+No fake social proof: no customer logos, no testimonials, no GitHub star counts,
+no compliance badges (SOC 2, HIPAA, GDPR), no user or revenue metrics.
+
+## Do not build in {{VERSION}}
+
+{{DEFERRED_FEATURES}}
+
+## Build order
+
+{{BUILD_ORDER}}
+
+## Rules
+
+- No `any` without an explanatory comment
+- Named exports only from packages — no `export default` in packages/
+- Co-locate tests: `foo.ts` → `__tests__/foo.test.ts`
+- No mocking internal packages in tests — only mock at system boundaries
+- All Zod schemas live in packages/schemas
+- Stage files by name — never `git add .` or `git add -A`
+- Commit messages: imperative mood, no AI co-author lines, no file lists
+
+## Do not touch
+
+- `pnpm-lock.yaml`
+- {{STABLE_PUBLIC_API_FILES}}
