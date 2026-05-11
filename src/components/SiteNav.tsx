@@ -65,16 +65,17 @@ export function SiteNav({
           : "sticky top-4 z-20"
       }
     >
-      <div className="max-w-[calc(100vw-6.5rem)] rounded-[1.5rem] border border-white/80 bg-white/78 px-3 py-2 shadow-[0_18px_55px_rgba(255,255,255,0.24)] backdrop-blur-xl sm:max-w-none sm:rounded-full">
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="max-w-[calc(100vw-5.5rem)] rounded-full border border-white/80 bg-white/78 px-2 py-1.5 shadow-[0_18px_55px_rgba(255,255,255,0.24)] backdrop-blur-xl sm:max-w-none sm:px-3 sm:py-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-2 py-1.5 pr-3 font-display text-sm tracking-[-0.03em] text-white"
+            aria-label={SITE_NAME}
+            className="inline-flex items-center gap-2 rounded-full bg-slate-900 p-1.5 font-display text-sm tracking-[-0.03em] text-white sm:px-2 sm:py-1.5 sm:pr-3"
           >
             <IconWrap>
               <HomeIcon />
             </IconWrap>
-            <span>{SITE_NAME}</span>
+            <span className="hidden sm:inline">{SITE_NAME}</span>
           </Link>
           <Link
             href="/"
@@ -101,7 +102,7 @@ export function SiteNav({
             </IconWrap>
           </Link>
           {showLanguageSwitcher ? (
-            <div className="hidden items-center gap-1 rounded-full bg-white/55 p-1 sm:flex" aria-label="Choose letter layout">
+            <div className="flex items-center gap-1 rounded-full bg-white/55 p-1" aria-label="Choose letter layout">
               {LANGUAGE_PACKS.map((pack) => {
                 const isActive = pack.id === languagePackId;
 
@@ -110,7 +111,7 @@ export function SiteNav({
                     key={pack.id}
                     type="button"
                     onClick={() => onLanguageChange?.(pack.id)}
-                    className="grid h-9 min-w-12 place-items-center rounded-full border px-2 transition hover:-translate-y-0.5"
+                    className="grid h-9 min-w-10 place-items-center rounded-full border px-1.5 transition hover:-translate-y-0.5 sm:min-w-12 sm:px-2"
                     style={{
                       background: isActive ? "#fff4d8" : "rgba(255,255,255,0.68)",
                       borderColor: isActive ? "#f4b678" : "rgba(255,255,255,0.88)",
@@ -126,33 +127,6 @@ export function SiteNav({
             </div>
           ) : null}
         </div>
-        {showLanguageSwitcher ? (
-          <div className="mt-2 grid grid-cols-4 gap-1.5 sm:hidden" aria-label="Choose letter layout">
-            {LANGUAGE_PACKS.map((pack) => {
-              const isActive = pack.id === languagePackId;
-
-              return (
-                <button
-                  key={pack.id}
-                  type="button"
-                  onClick={() => onLanguageChange?.(pack.id)}
-                  className={`grid h-10 min-w-0 place-items-center rounded-full border transition ${
-                    isActive ? "scale-[1.03]" : "hover:-translate-y-0.5"
-                  }`}
-                  style={{
-                    background: isActive ? "#fff4d8" : "rgba(255,255,255,0.7)",
-                    borderColor: isActive ? "#f4b678" : "rgba(255,255,255,0.88)",
-                    boxShadow: isActive ? "0 8px 18px rgba(244,182,120,0.28)" : undefined
-                  }}
-                  aria-pressed={isActive}
-                  aria-label={`Use ${pack.label}`}
-                >
-                  <LanguagePackIcon languageId={pack.id} compact />
-                </button>
-              );
-            })}
-          </div>
-        ) : null}
       </div>
     </nav>
   );
