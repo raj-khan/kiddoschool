@@ -48,13 +48,21 @@ export function NumberBoard({
       <div className="grid grid-cols-5 gap-1 sm:grid-cols-10 sm:gap-1.5">
         {values.map((value) => {
           const isActive = activeNumberValue === String(value);
+          const visibilityClasses =
+            value <= 10
+              ? ""
+              : value <= 20
+                ? "hidden min-[430px]:block"
+                : value <= 50
+                  ? "hidden min-[560px]:block"
+                  : "hidden lg:block";
 
           return (
             <button
               key={value}
               type="button"
               onClick={() => onNumberSelect(value)}
-              className={`aspect-square min-w-0 rounded-[0.8rem] border px-0.5 py-0.5 text-center font-display text-[1rem] leading-none shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition duration-200 ${
+              className={`${visibilityClasses} aspect-square min-w-0 rounded-[0.8rem] border px-0.5 py-0.5 text-center font-display text-[1rem] leading-none shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition duration-200 ${
                 isActive ? "scale-[1.03] -translate-y-0.5" : "hover:-translate-y-0.5"
               } sm:rounded-[0.9rem] sm:text-[0.95rem]`}
               style={{
