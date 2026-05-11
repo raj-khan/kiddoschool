@@ -175,17 +175,26 @@ const ENGLISH_COMPUTER_ROWS = [
   ]
 ] as const;
 
-const ARABIC_VOICE: AudioFilesVoiceConfig = {
+const ARABIC_SPEECH_FALLBACK: SpeechSynthesisVoiceConfig = {
+  type: "speech-synthesis",
+  lang: "ar",
+  rate: 0.92,
+  pitch: 1.02,
+  volume: 1
+};
+
+export const ARABIC_FEMALE_VOICE: AudioFilesVoiceConfig = {
   type: "audio-files",
-  basePath: "/audio/arabic-letters",
+  basePath: "/audio/arabic-letters/female-voice",
   extension: "mp3",
-  fallback: {
-    type: "speech-synthesis",
-    lang: "ar",
-    rate: 0.92,
-    pitch: 1.02,
-    volume: 1
-  }
+  fallback: ARABIC_SPEECH_FALLBACK
+};
+
+export const ARABIC_MALE_VOICE: AudioFilesVoiceConfig = {
+  type: "audio-files",
+  basePath: "/audio/arabic-letters/male-voice",
+  extension: "mp3",
+  fallback: ARABIC_SPEECH_FALLBACK
 };
 
 const BENGALI_VOICE: SpeechSynthesisVoiceConfig = {
@@ -243,15 +252,15 @@ export const LANGUAGE_PACKS: readonly LanguagePack[] = [
     direction: "rtl",
     prompt: "اضغط أي مفتاح أو انقر على لوحة المفاتيح العربية.",
     hint: "انقر على الحروف العربية أو استخدم تخطيط لوحة مفاتيح عربي.",
-    voice: ARABIC_VOICE,
+    voice: ARABIC_FEMALE_VOICE,
     allowGenericInput: false,
     rows: [
       [
-        key("ا", { name: "Alif",  speechText: "Alif",  assetKey: "1"  }),
+        key("أ", { name: "Alif",  speechText: "Alif",  assetKey: "1"  }),
         key("ب", { name: "Ba",    speechText: "Ba",    assetKey: "2"  }),
         key("ت", { name: "Ta",    speechText: "Ta",    assetKey: "3"  }),
         key("ث", { name: "Tha",   speechText: "Tha",   assetKey: "4"  }),
-        key("ج", { name: "Jim",   speechText: "Jim",   assetKey: "5"  }),
+        key("ج", { name: "Jeem",  speechText: "Jeem",  assetKey: "5"  }),
         key("ح", { name: "Ha",    speechText: "Ha",    assetKey: "6"  }),
         key("خ", { name: "Kha",   speechText: "Kha",   assetKey: "7"  })
       ],
@@ -259,15 +268,15 @@ export const LANGUAGE_PACKS: readonly LanguagePack[] = [
         key("د", { name: "Dal",   speechText: "Dal",   assetKey: "8"  }),
         key("ذ", { name: "Dhal",  speechText: "Dhal",  assetKey: "9"  }),
         key("ر", { name: "Ra",    speechText: "Ra",    assetKey: "10" }),
-        key("ز", { name: "Zay",   speechText: "Zay",   assetKey: "11" }),
-        key("س", { name: "Sin",   speechText: "Sin",   assetKey: "12" }),
-        key("ش", { name: "Shin",  speechText: "Shin",  assetKey: "13" }),
-        key("ص", { name: "Sad",   speechText: "Sad",   assetKey: "14" })
+        key("ز", { name: "Za",    speechText: "Za",    assetKey: "11" }),
+        key("س", { name: "Seen",  speechText: "Seen",  assetKey: "12" }),
+        key("ش", { name: "Sheen", speechText: "Sheen", assetKey: "13" }),
+        key("ص", { name: "Saad",  speechText: "Saad",  assetKey: "14" })
       ],
       [
-        key("ض", { name: "Dad",   speechText: "Dad",   assetKey: "15" }),
-        key("ط", { name: "Taa",   speechText: "Taa",   assetKey: "16" }),
-        key("ظ", { name: "Dha",   speechText: "Dha",   assetKey: "17" }),
+        key("ض", { name: "Daad",  speechText: "Daad",  assetKey: "15" }),
+        key("ط", { name: "Ta",    speechText: "Ta",    assetKey: "16" }),
+        key("ظ", { name: "Za",    speechText: "Za",    assetKey: "17" }),
         key("ع", { name: "Ain",   speechText: "Ain",   assetKey: "18" }),
         key("غ", { name: "Ghain", speechText: "Ghain", assetKey: "19" }),
         key("ف", { name: "Fa",    speechText: "Fa",    assetKey: "20" }),
@@ -276,11 +285,12 @@ export const LANGUAGE_PACKS: readonly LanguagePack[] = [
       [
         key("ك", { name: "Kaf",   speechText: "Kaf",   assetKey: "22" }),
         key("ل", { name: "Lam",   speechText: "Lam",   assetKey: "23" }),
-        key("م", { name: "Mim",   speechText: "Mim",   assetKey: "24" }),
-        key("ن", { name: "Nun",   speechText: "Nun",   assetKey: "25" }),
+        key("م", { name: "Meem",  speechText: "Meem",  assetKey: "24" }),
+        key("ن", { name: "Noon",  speechText: "Noon",  assetKey: "25" }),
         key("ه", { name: "Ha",    speechText: "Ha",    assetKey: "26" }),
-        key("و", { name: "Waw",   speechText: "Waw",   assetKey: "27" }),
-        key("ي", { name: "Ya",    speechText: "Ya",    assetKey: "28" })
+        key("و", { name: "Wa",    speechText: "Wa",    assetKey: "27" }),
+        key("ي", { name: "Ya",    speechText: "Ya",    assetKey: "28" }),
+        key("ء", { name: "Hamza", speechText: "Hamza", assetKey: "29" })
       ]
     ]
   },

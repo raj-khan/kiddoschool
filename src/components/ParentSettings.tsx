@@ -15,6 +15,7 @@ import {
   type NumberBoardOrder,
   type NumberRangeMax
 } from "@/lib/numbers";
+import type { ArabicVoice } from "@/lib/parent-settings-state";
 
 type ParentSettingsProps = {
   isOpen: boolean;
@@ -34,6 +35,8 @@ type ParentSettingsProps = {
   onToggleVirtualKeyboard: () => void;
   showPlayControls: boolean;
   onTogglePlayControls: () => void;
+  arabicVoice: ArabicVoice;
+  onArabicVoiceChange: (voice: ArabicVoice) => void;
   palette: Palette;
 };
 
@@ -146,6 +149,8 @@ export function ParentSettings({
   onToggleVirtualKeyboard,
   showPlayControls,
   onTogglePlayControls,
+  arabicVoice,
+  onArabicVoiceChange,
   palette
 }: ParentSettingsProps) {
   const kidAgeLabel = kidProfile ? getKidAgeLabel(kidProfile.ageGroup) : "Not set yet";
@@ -321,6 +326,59 @@ export function ParentSettings({
                   compact
                 />
               )}
+
+              {learningMode === "letters" && languagePack.id === "arabic" ? (
+                <div
+                  className="rounded-[1.6rem] border p-4"
+                  style={{
+                    background: palette.buttonSurface,
+                    borderColor: palette.buttonBorder
+                  }}
+                >
+                  <p className="text-xs font-extrabold uppercase tracking-[0.22em]" style={{ color: palette.detailText }}>
+                    Arabic voice
+                  </p>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    {(["female", "male"] as const).map((option) => {
+                      const isActive = arabicVoice === option;
+                      return (
+                        <button
+                          key={option}
+                          type="button"
+                          onClick={() => onArabicVoiceChange(option)}
+                          className={`rounded-[1.2rem] border px-3 py-3 text-left transition ${isActive ? "scale-[1.01]" : "hover:-translate-y-0.5"}`}
+                          style={{
+                            background: isActive ? palette.activeKeySurface : palette.shell,
+                            borderColor: isActive ? palette.activeKeyBorder : palette.buttonBorder,
+                            color: isActive ? palette.activeKeyText : palette.buttonText,
+                            boxShadow: isActive ? `0 14px 26px ${palette.activeKeyGlow}` : undefined
+                          }}
+                          aria-pressed={isActive}
+                        >
+                          <p className="font-display text-xl tracking-[-0.03em]">
+                            {option === "female" ? "Female" : "Male"}
+                          </p>
+                          <p className="mt-0.5 text-[11px] font-bold uppercase tracking-[0.12em] opacity-70">
+                            {option === "female" ? "29 letters" : "29 letters"}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-3 text-[11px] font-bold leading-5 opacity-60" style={{ color: palette.detailText }}>
+                    Female voice audio sourced from{" "}
+                    <a
+                      href="https://namaj.info/arabic-alphabets-with-mp3-audio-with-bangla-pronunciation/"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline"
+                    >
+                      namaj.info
+                    </a>
+                    . If you are the rightful owner and would like it removed, please share feedback — we will delete it promptly.
+                  </p>
+                </div>
+              ) : null}
 
               {learningMode === "letters" && languagePack.id === "numbers" ? (
                 <div

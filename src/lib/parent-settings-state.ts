@@ -2,6 +2,8 @@ import type { LearningMode } from "./learning-content";
 import type { LanguagePackId } from "./language-packs";
 import type { NumberBoardOrder, NumberRangeMax } from "./numbers";
 
+export type ArabicVoice = "female" | "male";
+
 export type ParentSettingsState = {
   isMuted: boolean;
   learningMode: LearningMode;
@@ -10,6 +12,7 @@ export type ParentSettingsState = {
   numberBoardOrder: NumberBoardOrder;
   showVirtualKeyboard: boolean;
   showPlayControls: boolean;
+  arabicVoice: ArabicVoice;
 };
 
 export const PARENT_SETTINGS_STORAGE_KEY = "nuha-keyboard.parent-settings";
@@ -22,7 +25,8 @@ export const DEFAULT_PARENT_SETTINGS_STATE: ParentSettingsState = {
   numberRangeMax: 20,
   numberBoardOrder: "ascending",
   showVirtualKeyboard: true,
-  showPlayControls: false
+  showPlayControls: false,
+  arabicVoice: "female"
 };
 
 function isLearningMode(value: unknown): value is LearningMode {
@@ -67,7 +71,8 @@ export function sanitizeParentSettingsState(value: unknown): ParentSettingsState
     numberRangeMax: settings.numberRangeMax,
     numberBoardOrder: settings.numberBoardOrder,
     showVirtualKeyboard: settings.showVirtualKeyboard,
-    showPlayControls: settings.showPlayControls
+    showPlayControls: settings.showPlayControls,
+    arabicVoice: settings.arabicVoice === "male" ? "male" : "female"
   };
 }
 

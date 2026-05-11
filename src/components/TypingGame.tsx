@@ -36,6 +36,8 @@ import {
   type KidProfile
 } from "@/lib/kid-profile";
 import {
+  ARABIC_FEMALE_VOICE,
+  ARABIC_MALE_VOICE,
   ENGLISH_COMPUTER_PRACTICE_PACK,
   getLanguagePackById,
   type LanguageKey,
@@ -132,14 +134,20 @@ export function TypingGame() {
     numberRangeMax,
     numberBoardOrder,
     showVirtualKeyboard,
-    showPlayControls
+    showPlayControls,
+    arabicVoice
   } = parentSettings;
   const mutedRef = useRef(isMuted);
   const paletteRef = useRef(INITIAL_PALETTE);
   const kidProfile = useSyncExternalStore(subscribeToKidProfile, loadKidProfile, () => null);
   const selectedLanguagePack = getLanguagePackById(selectedLanguageId);
+  const arabicPackVoice = arabicVoice === "male" ? ARABIC_MALE_VOICE : ARABIC_FEMALE_VOICE;
   const activeLanguagePack =
-    learningMode === "computer" ? ENGLISH_COMPUTER_PRACTICE_PACK : selectedLanguagePack;
+    learningMode === "computer"
+      ? ENGLISH_COMPUTER_PRACTICE_PACK
+      : selectedLanguagePack.id === "arabic"
+        ? { ...selectedLanguagePack, voice: arabicPackVoice }
+        : selectedLanguagePack;
   const colorLearningContent = getColorLearningContent(selectedLanguageId);
 
   const canSpeak = useSyncExternalStore(
@@ -553,6 +561,13 @@ export function TypingGame() {
           updateParentSettings((currentSettings) => ({
             ...currentSettings,
             showPlayControls: !currentSettings.showPlayControls
+          }))
+        }
+        arabicVoice={arabicVoice}
+        onArabicVoiceChange={(voice) =>
+          updateParentSettings((currentSettings) => ({
+            ...currentSettings,
+            arabicVoice: voice
           }))
         }
         palette={gameState.palette}
