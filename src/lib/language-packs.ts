@@ -289,8 +289,8 @@ export const LANGUAGE_PACKS: readonly LanguagePack[] = [
         key("ن", { name: "Noon",  speechText: "Noon",  assetKey: "25" }),
         key("ه", { name: "Ha",    speechText: "Ha",    assetKey: "26" }),
         key("و", { name: "Wa",    speechText: "Wa",    assetKey: "27" }),
-        key("ي", { name: "Ya",    speechText: "Ya",    assetKey: "28" }),
-        key("ء", { name: "Hamza", speechText: "Hamza", assetKey: "29" })
+        key("ء", { name: "Hamza", speechText: "Hamza", assetKey: "28" }),
+        key("ي", { name: "Ya",    speechText: "Ya",    assetKey: "29" })
       ]
     ]
   },
