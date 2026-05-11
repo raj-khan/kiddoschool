@@ -45,12 +45,12 @@ function getKeyButtonClasses(languageKey: LanguageKey, minimal: boolean, dense: 
   }
 
   if (languageKey.size === "wide") {
-    return `${baseClasses} ${minimal ? "min-w-[5.4rem]" : "min-w-[7rem]"} flex-1 text-sm`;
+    return `${baseClasses} ${minimal ? "min-w-0 flex-[1.5_1_0%]" : "min-w-[7rem] flex-1"} text-sm`;
   }
 
   const labelLength = (languageKey.label ?? languageKey.displayText ?? languageKey.value).length;
 
-  return `${baseClasses} ${minimal ? "min-w-[2.35rem]" : "min-w-[2.7rem]"} flex-1 ${labelLength > 2 ? "text-sm" : minimal ? "text-[1.35rem]" : "text-2xl"}`;
+  return `${baseClasses} min-w-0 flex-1 ${labelLength > 2 ? "text-sm" : minimal ? "text-[1.35rem]" : "text-2xl"}`;
 }
 
 export function VirtualKeyboard({

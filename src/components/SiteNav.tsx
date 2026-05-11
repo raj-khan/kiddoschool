@@ -12,7 +12,7 @@ export function SiteNav({ currentPath, overlay = false }: SiteNavProps) {
     <nav
       className={
         overlay
-          ? "fixed left-4 top-4 z-30 hidden sm:block"
+          ? "fixed left-4 top-4 z-30 block"
           : "sticky top-4 z-20"
       }
     >
@@ -35,8 +35,8 @@ export function SiteNav({ currentPath, overlay = false }: SiteNavProps) {
           <Link
             href="/contribute"
             className={`rounded-full px-3 py-2 text-xs font-extrabold uppercase tracking-[0.18em] transition ${
-              currentPath === "/contribute" ? "bg-slate-900 text-white" : "text-slate-700 hover:bg-white"
-            }`}
+              overlay ? "hidden sm:block" : ""
+            } ${currentPath === "/contribute" ? "bg-slate-900 text-white" : "text-slate-700 hover:bg-white"}`}
           >
             Contribute
           </Link>
@@ -44,7 +44,7 @@ export function SiteNav({ currentPath, overlay = false }: SiteNavProps) {
             href={REPO_URL}
             target="_blank"
             rel="noreferrer"
-            className="rounded-full px-3 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-slate-700 transition hover:bg-white"
+            className={`rounded-full px-3 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-slate-700 transition hover:bg-white ${overlay ? "hidden sm:block" : ""}`}
           >
             GitHub
           </a>

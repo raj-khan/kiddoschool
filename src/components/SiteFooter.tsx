@@ -34,7 +34,7 @@ export function SiteFooter({ overlay = false }: SiteFooterProps) {
   }, [affirmation]);
 
   return (
-    <footer className={overlay ? "fixed bottom-4 left-4 z-20 hidden sm:block" : ""}>
+    <footer className={overlay ? "fixed bottom-4 left-4 z-20 block" : ""}>
       <button
         type="button"
         onClick={handleClick}
