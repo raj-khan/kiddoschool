@@ -54,7 +54,7 @@ export function NumberBoard({
               : value <= 20
                 ? "hidden min-[430px]:block"
                 : value <= 50
-                  ? "hidden min-[560px]:block"
+                  ? "hidden sm:block"
                   : "hidden lg:block";
 
           return (
