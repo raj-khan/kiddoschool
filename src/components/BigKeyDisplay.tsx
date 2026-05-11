@@ -109,7 +109,7 @@ export function BigKeyDisplay({
         borderColor: palette.shellBorder
       }}
     >
-      <div className={`flex flex-wrap items-start justify-between ${constrained ? "gap-3" : "gap-4"}`}>
+      <div className={`hidden flex-wrap items-start justify-between sm:flex ${constrained ? "gap-3" : "gap-4"}`}>
         <div className={constrained ? "space-y-2" : "space-y-3"}>
           <p
             className={`font-display uppercase ${constrained ? "text-base tracking-[0.26em] sm:text-lg" : "text-lg tracking-[0.32em] sm:text-xl"}`}
