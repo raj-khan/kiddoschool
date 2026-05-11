@@ -139,7 +139,7 @@ export function BigKeyDisplay({
               {languageLabel}
             </span>
             <span
-              className="rounded-full px-3 py-2"
+              className="hidden rounded-full px-3 py-2 sm:inline-flex"
               style={{
                 background: palette.badgeSurface,
                 color: palette.badgeText
@@ -148,7 +148,7 @@ export function BigKeyDisplay({
               {languageNativeLabel}
             </span>
             <span
-              className="rounded-full px-3 py-2"
+              className="hidden rounded-full px-3 py-2 sm:inline-flex"
               style={{
                 background: palette.badgeSurface,
                 color: palette.badgeText
@@ -158,7 +158,7 @@ export function BigKeyDisplay({
             </span>
             {kidAgeLabel ? (
               <span
-                className="rounded-full px-3 py-2"
+                className="hidden rounded-full px-3 py-2 sm:inline-flex"
                 style={{
                   background: palette.badgeSurface,
                   color: palette.badgeText
@@ -169,7 +169,7 @@ export function BigKeyDisplay({
             ) : null}
             {kidPlayStyleLabel ? (
               <span
-                className="rounded-full px-3 py-2"
+                className="hidden rounded-full px-3 py-2 sm:inline-flex"
                 style={{
                   background: palette.badgeSurface,
                   color: palette.badgeText

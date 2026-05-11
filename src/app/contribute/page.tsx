@@ -114,6 +114,24 @@ export default function ContributePage() {
             />
           </div>
         </section>
+
+        <section className="overflow-hidden rounded-[2.2rem] border border-white/80 bg-white/72 p-6 backdrop-blur-xl sm:p-8">
+          <p className="font-display text-3xl tracking-[-0.05em] text-slate-900">
+            Resource credits
+          </p>
+          <p className="mt-2 text-sm font-bold leading-6 text-slate-600">
+            Arabic princess voice audio is credited to{" "}
+            <a
+              href="https://namaj.info/arabic-alphabets-with-mp3-audio-with-bangla-pronunciation/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-slate-900 underline decoration-slate-300 underline-offset-4"
+            >
+              namaj.info
+            </a>
+            . If you are the rightful owner and would like it removed, share feedback through GitHub and we will remove it promptly.
+          </p>
+        </section>
       </div>
     </main>
   );

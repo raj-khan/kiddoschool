@@ -77,12 +77,36 @@ export function VirtualKeyboard({
     >
       {!minimal ? (
         <div className="mb-4">
-          <p
-            className="font-display text-2xl tracking-[-0.04em]"
-            style={{ color: palette.keyText }}
-          >
-            Virtual keyboard
-          </p>
+          <div className="flex items-center gap-3">
+            <span
+              className="grid h-11 w-11 place-items-center rounded-[1rem] border"
+              style={{
+                background: palette.historySurface,
+                borderColor: palette.buttonBorder,
+                color: palette.buttonText
+              }}
+              aria-hidden="true"
+            >
+              <svg
+                viewBox="0 0 32 32"
+                className="h-7 w-7"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="4" y="8" width="24" height="16" rx="4" />
+                <path d="M9 13h.01M14 13h.01M19 13h.01M24 13h.01M9 18h.01M14 18h8M9 22h14" />
+              </svg>
+            </span>
+            <p
+              className="font-display text-2xl tracking-[-0.04em]"
+              style={{ color: palette.keyText }}
+            >
+              Virtual keyboard
+            </p>
+          </div>
           <p className="mt-1 text-sm font-bold leading-6" style={{ color: palette.detailText }}>
             Click with a mouse or tap on a screen when a physical keyboard is not enough.
           </p>

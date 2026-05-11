@@ -8,6 +8,7 @@ import { ControlButtons } from "@/components/ControlButtons";
 import { NumberBoard } from "@/components/NumberBoard";
 import { ParentSettings } from "@/components/ParentSettings";
 import { SiteNav } from "@/components/SiteNav";
+import { StartRail, type StartRailItem } from "@/components/StartRail";
 import { VirtualKeyboard } from "@/components/VirtualKeyboard";
 import {
   EMOJIS,
@@ -19,6 +20,7 @@ import {
 import {
   getColorLearningContent,
   getColorOptionById,
+  getResolvedColorOptions,
   getLearningModeLabel,
   type ColorOptionId,
   type LearningMode
@@ -36,6 +38,7 @@ import {
   ARABIC_MALE_VOICE,
   COLORS_VOICE,
   ENGLISH_COMPUTER_PRACTICE_PACK,
+  findLanguageKeyByValue,
   getLanguagePackById,
   type LanguageKey,
   type LanguagePack,
@@ -297,6 +300,40 @@ export function TypingGame() {
     };
   }, []);
 
+  const showNumberBoard = learningMode === "letters" && selectedLanguageId === "numbers";
+  const numberBoardValues = showNumberBoard
+    ? getNumberBoardValues(numberRangeMax, numberBoardOrder, numberBoardRandomSeed)
+    : [];
+  const startRailItems: readonly StartRailItem[] =
+    learningMode === "colors"
+      ? getResolvedColorOptions(selectedLanguageId)
+          .slice(0, 4)
+          .map((color) => ({
+            id: color.id,
+            label: color.label,
+            ariaLabel: `Try ${color.label}`,
+            direction: color.textDirection,
+            swatch: color.swatch
+          }))
+      : showNumberBoard
+        ? [1, 2, 3, 4]
+            .filter((value) => value <= numberRangeMax)
+            .map((value) => ({
+              id: String(value),
+              label: String(value),
+              ariaLabel: `Try number ${value}`
+            }))
+        : activeLanguagePack.rows
+            .flat()
+            .filter((languageKey) => !languageKey.size || languageKey.size === "regular")
+            .slice(0, 4)
+            .map((languageKey) => ({
+              id: languageKey.value,
+              label: languageKey.label ?? languageKey.displayText ?? languageKey.value,
+              ariaLabel: `Try ${languageKey.name ?? languageKey.label ?? languageKey.value}`,
+              direction: languageKey.textDirection ?? activeLanguagePack.direction
+            }));
+
   const playAutoPlayItem = useEffectEvent((): boolean => {
     const items = showNumberBoard
       ? numberBoardValues
@@ -381,11 +418,6 @@ export function TypingGame() {
     };
   }, [isAutoPlaying]);
 
-  useEffect(() => {
-    if (autoPlayTimerRef.current) clearTimeout(autoPlayTimerRef.current);
-    setIsAutoPlaying(false);
-  }, [learningMode, selectedLanguageId]);
-
   function handleToggleMute() {
     updateParentSettings((currentSettings) => {
       const nextValue = !currentSettings.isMuted;
@@ -419,6 +451,8 @@ export function TypingGame() {
       return;
     }
 
+    if (autoPlayTimerRef.current) clearTimeout(autoPlayTimerRef.current);
+    setIsAutoPlaying(false);
     stopVoicePlayback();
     updateParentSettings((currentSettings) => ({
       ...currentSettings,
@@ -437,6 +471,8 @@ export function TypingGame() {
       return;
     }
 
+    if (autoPlayTimerRef.current) clearTimeout(autoPlayTimerRef.current);
+    setIsAutoPlaying(false);
     stopVoicePlayback();
     updateParentSettings((currentSettings) => ({
       ...currentSettings,
@@ -514,6 +550,24 @@ export function TypingGame() {
     });
   }
 
+  function handleStartRailSelect(item: StartRailItem) {
+    if (learningMode === "colors") {
+      handleColorSelect(item.id as ColorOptionId);
+      return;
+    }
+
+    if (showNumberBoard) {
+      handleNumberSelect(Number(item.id));
+      return;
+    }
+
+    const languageKey = findLanguageKeyByValue(activeLanguagePack, item.id);
+
+    if (languageKey) {
+      handleVirtualKeyPress(languageKey);
+    }
+  }
+
   async function handleToggleFullscreen() {
     if (!document.fullscreenEnabled) {
       return;
@@ -533,7 +587,6 @@ export function TypingGame() {
       : "Voice ready"
     : "Voice unavailable";
 
-  const showNumberBoard = learningMode === "letters" && selectedLanguageId === "numbers";
   const showLettersKeyboard =
     learningMode === "letters" && selectedLanguageId !== "numbers" && showVirtualKeyboard;
   const showComputerKeyboard = learningMode === "computer";
@@ -575,9 +628,6 @@ export function TypingGame() {
     learningMode !== "colors" && gameState.displayText && gameState.displayText.length <= 6
       ? gameState.displayText
       : null;
-  const numberBoardValues = showNumberBoard
-    ? getNumberBoardValues(numberRangeMax, numberBoardOrder, numberBoardRandomSeed)
-    : [];
   const numberBoardOrderLabel =
     numberBoardOrder === "ascending"
       ? "Straight"
@@ -605,10 +655,15 @@ export function TypingGame() {
 
   return (
     <main
-      className="relative h-[100svh] overflow-hidden px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6"
+      className="relative min-h-[100svh] overflow-x-hidden overflow-y-auto px-4 py-4 sm:h-[100svh] sm:overflow-hidden sm:px-5 sm:py-5 lg:px-6 lg:py-6"
       style={{ background: gameState.palette.background }}
     >
-      <SiteNav currentPath="/" overlay />
+      <SiteNav
+        currentPath="/"
+        overlay
+        languagePackId={selectedLanguageId}
+        onLanguageChange={handleLanguageChange}
+      />
 
       <ParentSettings
         isOpen={isSettingsOpen}
@@ -662,7 +717,7 @@ export function TypingGame() {
         aria-hidden="true"
       />
 
-      <div className={`mx-auto flex h-full w-full min-h-0 flex-col ${shellLayoutClasses}`}>
+      <div className={`mx-auto flex min-h-[calc(100svh-2rem)] w-full flex-col sm:h-full sm:min-h-0 ${shellLayoutClasses}`}>
         {showNumberBoard ? (
           <>
             {controls}
@@ -684,6 +739,14 @@ export function TypingGame() {
                 {isAutoPlaying ? "Stop" : "Play all"}
               </button>
             </div>
+
+            <StartRail
+              items={startRailItems}
+              activeItemId={gameState.activeItemId}
+              title="Start here"
+              onSelect={handleStartRailSelect}
+              palette={gameState.palette}
+            />
 
             <div className="flex min-h-0 flex-1 flex-col gap-3 sm:flex-row">
               <div className="min-h-0 flex-[0.92]">
@@ -750,6 +813,14 @@ export function TypingGame() {
               kidProfile={kidProfile}
               kidAgeLabel={kidAgeLabel}
               kidPlayStyleLabel={kidPlayStyleLabel}
+            />
+
+            <StartRail
+              items={startRailItems}
+              activeItemId={gameState.activeItemId}
+              title="Start here"
+              onSelect={handleStartRailSelect}
+              palette={gameState.palette}
             />
 
             {showInputPanel ? (

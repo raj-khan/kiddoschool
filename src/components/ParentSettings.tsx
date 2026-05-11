@@ -1,4 +1,4 @@
-import Link from "next/link";
+import type { ReactNode } from "react";
 
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { LearningModeSelector } from "@/components/LearningModeSelector";
@@ -39,6 +39,7 @@ type ToggleRowProps = {
   checked: boolean;
   onToggle: () => void;
   palette: Palette;
+  icon: ReactNode;
 };
 
 function ParentAvatarFather() {
@@ -85,30 +86,95 @@ function ParentAvatarMother() {
   );
 }
 
+function KeyboardIcon() {
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      className="h-8 w-8"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="4" y="8" width="24" height="16" rx="4" />
+      <path d="M9 13h.01M14 13h.01M19 13h.01M24 13h.01M9 18h.01M14 18h8M9 22h14" />
+    </svg>
+  );
+}
+
+function PlayControlsIcon() {
+  return (
+    <svg viewBox="0 0 32 32" className="h-8 w-8" fill="none" aria-hidden="true">
+      <circle cx="16" cy="16" r="13" fill="#ffe7c9" />
+      <path d="M13 10.5v11l9-5.5-9-5.5Z" fill="#17324d" />
+      <path d="M8.5 24.5h15" stroke="#f4b678" strokeWidth="2.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function PrincessIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-10 w-10" fill="none" aria-hidden="true">
+      <circle cx="24" cy="24" r="22" fill="#ffe1e9" />
+      <path d="M13 16l5 4 6-8 6 8 5-4v10H13V16Z" fill="#f7c948" />
+      <path d="M15 24c0-5.4 4-9.2 9-9.2s9 3.8 9 9.2v1.2c0 2.6-1 5-2.9 6.8l-1.3 1.2c-2.7 2.5-6.9 2.5-9.6 0L17.9 32A9.13 9.13 0 0 1 15 25.2V24Z" fill="#ffd7b0" />
+      <path d="M14 25c.3-7.5 4.4-11.7 10-11.7S33.7 17.5 34 25c-3.9-1.5-6.6-3.7-8-6.5-1.3 2.5-5.2 5.2-12 6.5Z" fill="#7a284f" />
+      <path d="M17 39c1.8-3.5 4.5-5.2 7-5.2s5.2 1.7 7 5.2" stroke="#e36d8f" strokeWidth="3.2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function PrinceIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-10 w-10" fill="none" aria-hidden="true">
+      <circle cx="24" cy="24" r="22" fill="#dff2ff" />
+      <path d="M13 16l5 4 6-8 6 8 5-4v10H13V16Z" fill="#f7c948" />
+      <path d="M15 23c0-5.5 4-9.4 9-9.4s9 3.9 9 9.4v1.3c0 2.6-1 5-2.9 6.8l-1.3 1.2c-2.7 2.5-6.9 2.5-9.6 0l-1.3-1.2A9.13 9.13 0 0 1 15 24.3V23Z" fill="#ffd7b0" />
+      <path d="M14 23.5c.4-6.8 4.6-11 10-11s9.6 4.2 10 11c-2.4-2.5-5.1-3.6-8-3.2-1.9.2-4.8 1.4-8.9 3.3l-3.1-.1Z" fill="#16334d" />
+      <path d="M17 39c1.8-3.5 4.5-5.2 7-5.2s5.2 1.7 7 5.2" stroke="#2b5d83" strokeWidth="3.2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function ToggleRow({
   label,
   description,
   checked,
   onToggle,
-  palette
+  palette,
+  icon
 }: ToggleRowProps) {
   return (
     <button
       type="button"
       onClick={onToggle}
-      className="flex w-full items-center justify-between gap-4 rounded-[1.4rem] border px-4 py-4 text-left transition hover:-translate-y-0.5"
+      className="flex w-full items-center justify-between gap-3 rounded-[1.4rem] border px-3 py-3 text-left transition hover:-translate-y-0.5 sm:gap-4 sm:px-4 sm:py-4"
       style={{
         background: palette.buttonSurface,
         borderColor: palette.buttonBorder
       }}
     >
-      <div>
-        <p className="font-display text-2xl tracking-[-0.04em]" style={{ color: palette.keyText }}>
-          {label}
-        </p>
-        <p className="mt-1 text-sm font-bold leading-6" style={{ color: palette.detailText }}>
-          {description}
-        </p>
+      <div className="flex min-w-0 items-center gap-3">
+        <span
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-[1rem] border"
+          style={{
+            background: checked ? palette.activeKeySurface : palette.historySurface,
+            borderColor: checked ? palette.activeKeyBorder : palette.buttonBorder,
+            color: checked ? palette.activeKeyText : palette.buttonText
+          }}
+        >
+          {icon}
+        </span>
+        <div className="min-w-0">
+          <p className="font-display text-xl tracking-[-0.04em] sm:text-2xl" style={{ color: palette.keyText }}>
+            {label}
+          </p>
+          <p className="mt-1 text-xs font-bold leading-5 sm:text-sm sm:leading-6" style={{ color: palette.detailText }}>
+            {description}
+          </p>
+        </div>
       </div>
       <span
         className={`relative inline-flex h-8 w-14 items-center rounded-full border transition ${checked ? "justify-end" : "justify-start"} p-1`}
@@ -171,7 +237,7 @@ export function ParentSettings({
             <ParentAvatarMother />
           </span>
         </div>
-        <div className="text-left">
+        <div className="hidden text-left sm:block">
           <p className="font-display text-xl tracking-[-0.04em]" style={{ color: palette.keyText }}>
             Parent settings
           </p>
@@ -211,7 +277,7 @@ export function ParentSettings({
                   <p className="font-display text-3xl tracking-[-0.05em]" style={{ color: palette.keyText }}>
                     Parent controls
                   </p>
-                  <p className="mt-2 text-sm font-bold leading-6" style={{ color: palette.detailText }}>
+                  <p className="mt-2 hidden text-sm font-bold leading-6 sm:block" style={{ color: palette.detailText }}>
                     Keep the play screen simple for kids and leave the configuration work here.
                   </p>
                 </div>
@@ -250,7 +316,7 @@ export function ParentSettings({
                   <p className="font-display text-2xl tracking-[-0.04em]" style={{ color: palette.keyText }}>
                     Computer basics
                   </p>
-                  <p className="mt-1 text-sm font-bold leading-6" style={{ color: palette.detailText }}>
+                  <p className="mt-1 hidden text-sm font-bold leading-6 sm:block" style={{ color: palette.detailText }}>
                     Keyboard practice uses the English computer board for now so kids can learn common keys first.
                   </p>
                 </div>
@@ -277,12 +343,13 @@ export function ParentSettings({
                   <div className="mt-3 grid grid-cols-2 gap-2">
                     {(["female", "male"] as const).map((option) => {
                       const isActive = arabicVoice === option;
+                      const isPrincess = option === "female";
                       return (
                         <button
                           key={option}
                           type="button"
                           onClick={() => onArabicVoiceChange(option)}
-                          className={`rounded-[1.2rem] border px-3 py-3 text-left transition ${isActive ? "scale-[1.01]" : "hover:-translate-y-0.5"}`}
+                          className={`flex items-center gap-3 rounded-[1.2rem] border px-3 py-3 text-left transition ${isActive ? "scale-[1.01]" : "hover:-translate-y-0.5"}`}
                           style={{
                             background: isActive ? palette.activeKeySurface : palette.shell,
                             borderColor: isActive ? palette.activeKeyBorder : palette.buttonBorder,
@@ -291,28 +358,19 @@ export function ParentSettings({
                           }}
                           aria-pressed={isActive}
                         >
-                          <p className="font-display text-xl tracking-[-0.03em]">
-                            {option === "female" ? "Female" : "Male"}
-                          </p>
-                          <p className="mt-0.5 text-[11px] font-bold uppercase tracking-[0.12em] opacity-70">
-                            {option === "female" ? "29 letters" : "29 letters"}
-                          </p>
+                          {isPrincess ? <PrincessIcon /> : <PrinceIcon />}
+                          <span>
+                            <span className="block font-display text-xl tracking-[-0.03em]">
+                              {isPrincess ? "Princess" : "Prince"}
+                            </span>
+                            <span className="mt-0.5 block text-[11px] font-bold uppercase tracking-[0.12em] opacity-70">
+                              29 letters
+                            </span>
+                          </span>
                         </button>
                       );
                     })}
                   </div>
-                  <p className="mt-3 text-[11px] font-bold leading-5 opacity-60" style={{ color: palette.detailText }}>
-                    Female voice audio sourced from{" "}
-                    <a
-                      href="https://namaj.info/arabic-alphabets-with-mp3-audio-with-bangla-pronunciation/"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="underline"
-                    >
-                      namaj.info
-                    </a>
-                    . If you are the rightful owner and would like it removed, please share feedback — we will delete it promptly.
-                  </p>
                 </div>
               ) : null}
 
@@ -327,7 +385,7 @@ export function ParentSettings({
                   <p className="font-display text-2xl tracking-[-0.04em]" style={{ color: palette.keyText }}>
                     Number range
                   </p>
-                  <p className="mt-1 text-sm font-bold leading-6" style={{ color: palette.detailText }}>
+                  <p className="mt-1 hidden text-sm font-bold leading-6 sm:block" style={{ color: palette.detailText }}>
                     Pick how far the counting board should go. Number mode stays numbers-only.
                   </p>
 
@@ -402,6 +460,7 @@ export function ParentSettings({
                   checked={showVirtualKeyboard}
                   onToggle={onToggleVirtualKeyboard}
                   palette={palette}
+                  icon={<KeyboardIcon />}
                 />
               ) : learningMode === "computer" ? (
                 <div
@@ -414,7 +473,7 @@ export function ParentSettings({
                   <p className="font-display text-2xl tracking-[-0.04em]" style={{ color: palette.keyText }}>
                     Practice keyboard
                   </p>
-                  <p className="mt-1 text-sm font-bold leading-6" style={{ color: palette.detailText }}>
+                  <p className="mt-1 hidden text-sm font-bold leading-6 sm:block" style={{ color: palette.detailText }}>
                     Computer mode keeps the keyboard visible so children can match real keys with the screen.
                   </p>
                 </div>
@@ -429,7 +488,7 @@ export function ParentSettings({
                   <p className="font-display text-2xl tracking-[-0.04em]" style={{ color: palette.keyText }}>
                     Color strip
                   </p>
-                  <p className="mt-1 text-sm font-bold leading-6" style={{ color: palette.detailText }}>
+                  <p className="mt-1 hidden text-sm font-bold leading-6 sm:block" style={{ color: palette.detailText }}>
                     Color mode keeps the tap-ready color bar visible so kids can always choose a color.
                   </p>
                 </div>
@@ -441,34 +500,8 @@ export function ParentSettings({
                 checked={showPlayControls}
                 onToggle={onTogglePlayControls}
                 palette={palette}
+                icon={<PlayControlsIcon />}
               />
-
-              <div
-                className="rounded-[1.6rem] border p-4"
-                style={{
-                  background: palette.buttonSurface,
-                  borderColor: palette.buttonBorder
-                }}
-              >
-                <p className="font-display text-2xl tracking-[-0.04em]" style={{ color: palette.keyText }}>
-                  Open source support
-                </p>
-                <p className="mt-2 text-sm font-bold leading-6" style={{ color: palette.detailText }}>
-                  Parents can help fund better voice packs, developers can contribute code, and anyone can share the
-                  project with teachers, families, and social communities.
-                </p>
-                <Link
-                  href="/contribute"
-                  className="mt-4 inline-flex rounded-full border px-4 py-2 text-sm font-extrabold uppercase tracking-[0.18em] transition hover:-translate-y-0.5"
-                  style={{
-                    background: palette.historySurface,
-                    borderColor: palette.buttonBorder,
-                    color: palette.buttonText
-                  }}
-                >
-                  Open contribute page
-                </Link>
-              </div>
             </div>
             </div>
           </aside>

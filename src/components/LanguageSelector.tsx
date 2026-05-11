@@ -1,3 +1,4 @@
+import { LanguagePackIcon } from "@/components/LanguagePackIcon";
 import type { Palette } from "@/lib/constants";
 import {
   LANGUAGE_PACKS,
@@ -18,37 +19,55 @@ export function LanguageSelector({
   palette,
   compact = false
 }: LanguageSelectorProps) {
+  const title = compact ? "Letter layout" : "Language pack";
+  const description = compact
+    ? "Choose the keyboard for this play session."
+    : "Switch the keyboard now, then add more community packs later.";
+  const gridClasses = compact
+    ? "grid grid-cols-4 gap-2"
+    : "grid grid-cols-2 gap-3 sm:grid-cols-4";
+
   if (compact) {
     return (
       <div className="space-y-3">
         <div>
           <p className="text-xs font-extrabold uppercase tracking-[0.22em]" style={{ color: palette.detailText }}>
-            Language pack
+            {title}
           </p>
-          <p className="mt-1 text-sm font-bold leading-6" style={{ color: palette.detailText }}>
-            Choose the active keyboard for this play session.
+          <p className={`${compact ? "hidden sm:block" : ""} mt-1 text-sm font-bold leading-6`} style={{ color: palette.detailText }}>
+            {description}
           </p>
         </div>
 
-        <label className="block">
-          <span className="sr-only">Choose a language pack</span>
-          <select
-            value={languagePack.id}
-            onChange={(event) => onChange(event.target.value as LanguagePackId)}
-            className="w-full rounded-[1.3rem] border px-4 py-3 text-base font-bold outline-none transition focus:ring-2"
-            style={{
-              background: palette.buttonSurface,
-              borderColor: palette.buttonBorder,
-              color: palette.buttonText
-            }}
-          >
-            {LANGUAGE_PACKS.map((pack) => (
-              <option key={pack.id} value={pack.id}>
-                {pack.label} · {pack.nativeLabel}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className={gridClasses}>
+          {LANGUAGE_PACKS.map((pack) => {
+            const isActive = pack.id === languagePack.id;
+
+            return (
+              <button
+                key={pack.id}
+                type="button"
+                onClick={() => onChange(pack.id)}
+                className={`min-w-0 rounded-[1.1rem] border px-1.5 py-2 text-center transition duration-150 ${
+                  isActive ? "scale-[1.02]" : "hover:-translate-y-0.5"
+                }`}
+                style={{
+                  background: isActive ? palette.activeKeySurface : palette.shell,
+                  borderColor: isActive ? palette.activeKeyBorder : palette.buttonBorder,
+                  color: isActive ? palette.activeKeyText : palette.buttonText,
+                  boxShadow: isActive ? `0 10px 22px ${palette.activeKeyGlow}` : undefined
+                }}
+                aria-pressed={isActive}
+                aria-label={`Use ${pack.label}`}
+              >
+                <LanguagePackIcon languageId={pack.id} active={isActive} />
+                <span className="mt-1 block truncate text-[10px] font-extrabold uppercase tracking-[0.08em] sm:text-[11px]">
+                  {pack.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     );
   }
@@ -66,32 +85,41 @@ export function LanguageSelector({
           className="font-display text-2xl tracking-[-0.04em]"
           style={{ color: palette.keyText }}
         >
-          Language pack
+          {title}
         </p>
         <p className="mt-1 text-sm font-bold leading-6" style={{ color: palette.detailText }}>
-          Switch the keyboard on top now, then add more community packs later.
+          {description}
         </p>
       </div>
 
-      <label className="block">
-        <span className="sr-only">Choose a language pack</span>
-        <select
-          value={languagePack.id}
-          onChange={(event) => onChange(event.target.value as LanguagePackId)}
-          className="w-full rounded-[1.3rem] border px-4 py-3 text-base font-bold outline-none transition focus:ring-2"
-          style={{
-            background: palette.buttonSurface,
-            borderColor: palette.buttonBorder,
-            color: palette.buttonText
-          }}
-        >
-          {LANGUAGE_PACKS.map((pack) => (
-            <option key={pack.id} value={pack.id}>
-              {pack.label} · {pack.nativeLabel}
-            </option>
-          ))}
-        </select>
-      </label>
+      <div className={gridClasses}>
+        {LANGUAGE_PACKS.map((pack) => {
+          const isActive = pack.id === languagePack.id;
+
+          return (
+            <button
+              key={pack.id}
+              type="button"
+              onClick={() => onChange(pack.id)}
+              className={`rounded-[1.25rem] border px-3 py-3 text-center transition duration-150 ${
+                isActive ? "scale-[1.02]" : "hover:-translate-y-0.5"
+              }`}
+              style={{
+                background: isActive ? palette.activeKeySurface : palette.buttonSurface,
+                borderColor: isActive ? palette.activeKeyBorder : palette.buttonBorder,
+                color: isActive ? palette.activeKeyText : palette.buttonText,
+                boxShadow: isActive ? `0 12px 26px ${palette.activeKeyGlow}` : undefined
+              }}
+              aria-pressed={isActive}
+            >
+              <LanguagePackIcon languageId={pack.id} active={isActive} />
+              <span className="mt-2 block text-xs font-extrabold uppercase tracking-[0.12em]">
+                {pack.label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
       <p
         className="mt-3 font-display text-2xl tracking-[-0.04em]"

@@ -170,7 +170,7 @@ export const PALETTES: readonly Palette[] = [
   }
 ] as const;
 
-export const EMOJIS = ["🌟", "🎈", "🦄", "🚀", "🎉", "🌈", "🐣", "🍭", "✨", "🫧"] as const;
+export const EMOJIS = ["🌟", "🎈", "🦄", "🚀", "🎉", "🌸", "🐣", "🍭", "✨", "🫧"] as const;
 
 export const MESSAGES = [
   "Great job!",
