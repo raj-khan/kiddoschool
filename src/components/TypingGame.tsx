@@ -119,7 +119,6 @@ export function TypingGame() {
   const [numberBoardRandomSeed, setNumberBoardRandomSeed] = useState(1);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
-  const autoPlayCancelRef = useRef(false);
   const autoPlayIndexRef = useRef(0);
   const autoPlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -280,7 +279,8 @@ export function TypingGame() {
       return;
     }
 
-    autoPlayCancelRef.current = true;
+    if (autoPlayTimerRef.current) clearTimeout(autoPlayTimerRef.current);
+    setIsAutoPlaying(false);
     stopVoicePlayback();
     void activateResolvedKey(resolvedKey);
   });
@@ -297,7 +297,7 @@ export function TypingGame() {
     };
   }, []);
 
-  const playAutoPlayItem = useEffectEvent((): Promise<void> => {
+  const playAutoPlayItem = useEffectEvent((): boolean => {
     const items = showNumberBoard
       ? numberBoardValues
       : activeLanguagePack.rows.flat().filter((k) => !k.size || k.size === "regular");
@@ -305,9 +305,8 @@ export function TypingGame() {
     const index = autoPlayIndexRef.current;
 
     if (index >= items.length) {
-      autoPlayCancelRef.current = true;
       setIsAutoPlaying(false);
-      return Promise.resolve();
+      return false;
     }
 
     const item = items[index];
@@ -315,55 +314,74 @@ export function TypingGame() {
 
     if (showNumberBoard) {
       const n = item as number;
-      return activateDisplayItem({
-        displayText: String(n),
-        speechText: getNumberSpeechText(n),
-        speechLang: getPackSpeechLang(selectedLanguagePack),
-        textDirection: "ltr",
-        assetKey: getNumberAssetKey(n),
-        activeItemId: String(n),
-        rotatePalette: false,
-        skipBurst: true
+      const displayText = String(n);
+      startTransition(() => {
+        setGameState((s) => ({
+          ...s,
+          displayText,
+          speechText: getNumberSpeechText(n),
+          displayDirection: "ltr",
+          activeItemId: displayText,
+          previewColor: null
+        }));
       });
+      if (!mutedRef.current) {
+        void speakWithVoice({
+          text: getNumberSpeechText(n),
+          assetKey: getNumberAssetKey(n),
+          voice: selectedLanguagePack.voice,
+          speechLang: getPackSpeechLang(selectedLanguagePack)
+        });
+      }
+      return true;
     }
 
     const resolved = resolveVirtualLanguageKey(activeLanguagePack, item as LanguageKey);
-    return activateDisplayItem({
-      displayText: resolved.displayText,
-      speechText: resolved.speechText,
-      speechLang: resolved.speechLang,
-      textDirection: resolved.textDirection,
-      assetKey: resolved.assetKey,
-      activeItemId: resolved.value,
-      rotatePalette: false,
-      skipBurst: true
+    startTransition(() => {
+      setGameState((s) => ({
+        ...s,
+        displayText: resolved.displayText,
+        speechText: resolved.speechText,
+        displayDirection: resolved.textDirection,
+        activeItemId: resolved.value,
+        previewColor: null
+      }));
     });
+    if (!mutedRef.current) {
+      void speakWithVoice({
+        text: resolved.speechText,
+        assetKey: resolved.assetKey,
+        voice: activeLanguagePack.voice,
+        speechLang: resolved.speechLang
+      });
+    }
+    return true;
   });
 
   useEffect(() => {
     if (!isAutoPlaying) return;
 
-    autoPlayCancelRef.current = false;
     autoPlayIndexRef.current = 0;
+    let cancelled = false;
 
     function tick() {
-      void playAutoPlayItem().then(() => {
-        if (!autoPlayCancelRef.current) {
-          autoPlayTimerRef.current = setTimeout(tick, 2500);
-        }
-      });
+      if (cancelled) return;
+      const hasMore = playAutoPlayItem();
+      if (hasMore && !cancelled) {
+        autoPlayTimerRef.current = setTimeout(tick, 2500);
+      }
     }
 
     tick();
 
     return () => {
-      autoPlayCancelRef.current = true;
+      cancelled = true;
       if (autoPlayTimerRef.current) clearTimeout(autoPlayTimerRef.current);
+      stopVoicePlayback();
     };
-  }, [isAutoPlaying, playAutoPlayItem]);
+  }, [isAutoPlaying]);
 
   useEffect(() => {
-    autoPlayCancelRef.current = true;
     if (autoPlayTimerRef.current) clearTimeout(autoPlayTimerRef.current);
     setIsAutoPlaying(false);
   }, [learningMode, selectedLanguageId]);
@@ -459,14 +477,14 @@ export function TypingGame() {
   }
 
   function handleVirtualKeyPress(languageKey: LanguageKey) {
-    autoPlayCancelRef.current = true;
-    stopVoicePlayback();
+    if (autoPlayTimerRef.current) clearTimeout(autoPlayTimerRef.current);
     setIsAutoPlaying(false);
+    stopVoicePlayback();
     void activateResolvedKey(resolveVirtualLanguageKey(activeLanguagePack, languageKey));
   }
 
   function handleNumberSelect(value: number) {
-    autoPlayCancelRef.current = true;
+    if (autoPlayTimerRef.current) clearTimeout(autoPlayTimerRef.current);
     setIsAutoPlaying(false);
     const displayText = String(value);
 
@@ -652,7 +670,7 @@ export function TypingGame() {
             <div className="flex justify-center">
               <button
                 type="button"
-                onClick={() => { if (isAutoPlaying) { autoPlayCancelRef.current = true; stopVoicePlayback(); setIsAutoPlaying(false); } else { setIsAutoPlaying(true); } }}
+                onClick={() => { if (isAutoPlaying) { if (autoPlayTimerRef.current) clearTimeout(autoPlayTimerRef.current); stopVoicePlayback(); setIsAutoPlaying(false); } else { setIsAutoPlaying(true); } }}
                 className="flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-extrabold uppercase tracking-[0.16em] shadow-[0_4px_0_rgba(45,48,71,0.14),0_8px_18px_rgba(45,48,71,0.06)] transition duration-150 hover:-translate-y-px active:translate-y-0.5 active:shadow-[0_1px_0_rgba(45,48,71,0.14)]"
                 style={{
                   background: isAutoPlaying ? gameState.palette.activeKeySurface : gameState.palette.buttonSurface,
@@ -740,7 +758,7 @@ export function TypingGame() {
                   <div className="flex justify-center">
                     <button
                       type="button"
-                      onClick={() => { if (isAutoPlaying) { autoPlayCancelRef.current = true; stopVoicePlayback(); setIsAutoPlaying(false); } else { setIsAutoPlaying(true); } }}
+                      onClick={() => { if (isAutoPlaying) { if (autoPlayTimerRef.current) clearTimeout(autoPlayTimerRef.current); stopVoicePlayback(); setIsAutoPlaying(false); } else { setIsAutoPlaying(true); } }}
                       className="flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-extrabold uppercase tracking-[0.16em] shadow-[0_4px_0_rgba(45,48,71,0.14),0_8px_18px_rgba(45,48,71,0.06)] transition duration-150 hover:-translate-y-px active:translate-y-0.5 active:shadow-[0_1px_0_rgba(45,48,71,0.14)]"
                       style={{
                         background: isAutoPlaying ? gameState.palette.activeKeySurface : gameState.palette.buttonSurface,
