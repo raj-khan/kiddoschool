@@ -85,11 +85,11 @@ export function BigKeyDisplay({
         ? "text-[clamp(2rem,5.8vw,3.6rem)]"
       : "text-[clamp(2.5rem,7vw,4.8rem)]";
   const stageHeightClasses = immersive ? "flex-1 min-h-0" : constrained ? "flex-[1_1_0%] min-h-0" : "min-h-[30rem]";
-  const contentPaddingClasses = immersive ? "py-4 sm:py-6" : constrained ? "py-3 sm:py-4" : "py-8 sm:py-12";
+  const contentPaddingClasses = immersive ? "py-3 sm:py-6" : constrained ? "py-2 sm:py-4" : "py-6 sm:py-12";
   const emojiClasses = immersive
     ? "mb-7 h-28 w-28 text-6xl sm:h-32 sm:w-32 sm:text-7xl"
     : constrained
-      ? "mb-4 h-20 w-20 text-5xl sm:h-24 sm:w-24 sm:text-6xl"
+      ? "mb-2 h-16 w-16 text-4xl sm:mb-4 sm:h-24 sm:w-24 sm:text-6xl"
       : "mb-5 h-24 w-24 text-5xl sm:h-28 sm:w-28 sm:text-6xl";
   const messageClasses = immersive
     ? "mt-5 text-4xl sm:text-5xl"
@@ -101,7 +101,7 @@ export function BigKeyDisplay({
 
   return (
     <section
-      className={`play-surface stage-entrance flex w-full ${stageHeightClasses} flex-col justify-between rounded-[2.5rem] border px-5 py-5 shadow-[0_26px_80px_rgba(255,255,255,0.18)] backdrop-blur-xl sm:px-8 sm:py-7 lg:px-10 lg:py-8`}
+      className={`play-surface stage-entrance flex w-full ${stageHeightClasses} flex-col justify-between rounded-[2rem] border px-4 py-4 shadow-[0_26px_80px_rgba(255,255,255,0.18)] backdrop-blur-xl sm:rounded-[2.5rem] sm:px-8 sm:py-7 lg:px-10 lg:py-8`}
       style={{
         background: previewColor
           ? `linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.5)), ${previewColor}`

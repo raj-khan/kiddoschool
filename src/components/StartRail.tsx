@@ -29,7 +29,7 @@ export function StartRail({
 
   return (
     <section
-      className="rounded-[1.6rem] border p-2.5 shadow-[0_18px_48px_rgba(255,255,255,0.16)] backdrop-blur-xl sm:p-3"
+      className="hidden rounded-[1.6rem] border p-2.5 shadow-[0_18px_48px_rgba(255,255,255,0.16)] backdrop-blur-xl sm:block sm:p-3"
       style={{
         background: palette.shell,
         borderColor: palette.shellBorder

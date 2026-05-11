@@ -19,14 +19,14 @@ export function NumberBoard({
 }: NumberBoardProps) {
   return (
     <section
-      className="flex h-full min-h-0 w-full flex-col rounded-[1.8rem] border p-3 shadow-[0_22px_60px_rgba(255,255,255,0.18)] backdrop-blur-xl sm:p-4"
+      className="flex h-full min-h-0 w-full flex-col rounded-[1.5rem] border p-2.5 shadow-[0_22px_60px_rgba(255,255,255,0.18)] backdrop-blur-xl sm:rounded-[1.8rem] sm:p-4"
       style={{
         background: palette.shell,
         borderColor: palette.shellBorder
       }}
     >
-      <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
-        <div>
+      <div className="mb-2 flex flex-wrap items-end justify-between gap-2 sm:mb-3 sm:gap-3">
+        <div className="hidden sm:block">
           <p className="font-display text-2xl tracking-[-0.04em]" style={{ color: palette.keyText }}>
             Number board
           </p>
@@ -45,7 +45,7 @@ export function NumberBoard({
         </span>
       </div>
 
-      <div className="grid grid-cols-5 gap-1.5 sm:grid-cols-10">
+      <div className="grid grid-cols-5 gap-1 sm:grid-cols-10 sm:gap-1.5">
         {values.map((value) => {
           const isActive = activeNumberValue === String(value);
 
@@ -54,9 +54,9 @@ export function NumberBoard({
               key={value}
               type="button"
               onClick={() => onNumberSelect(value)}
-              className={`aspect-square min-w-0 rounded-[0.9rem] border px-0.5 py-0.5 text-center font-display text-[1.15rem] leading-none shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition duration-200 ${
+              className={`aspect-square min-w-0 rounded-[0.8rem] border px-0.5 py-0.5 text-center font-display text-[1rem] leading-none shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition duration-200 ${
                 isActive ? "scale-[1.03] -translate-y-0.5" : "hover:-translate-y-0.5"
-              } sm:text-[0.95rem]`}
+              } sm:rounded-[0.9rem] sm:text-[0.95rem]`}
               style={{
                 background: isActive ? palette.activeKeySurface : palette.historySurface,
                 borderColor: isActive ? palette.activeKeyBorder : palette.buttonBorder,

@@ -643,10 +643,10 @@ export function TypingGame() {
     showLettersKeyboard || showComputerKeyboard || showColorPalette || showNumberBoard;
   const isImmersiveStage = !showInputPanel;
   const shellLayoutClasses = showNumberBoard
-    ? "max-w-7xl gap-3 pt-17 sm:pt-19"
+    ? "max-w-7xl gap-2 pt-16 sm:gap-3 sm:pt-19"
     : showInputPanel
-      ? "max-w-6xl gap-3 pt-17 sm:pt-19"
-      : "max-w-4xl justify-center gap-5 pt-18 sm:pt-20";
+      ? "max-w-6xl gap-2 pt-16 sm:gap-3 sm:pt-19"
+      : "max-w-4xl justify-center gap-4 pt-17 sm:gap-5 sm:pt-20";
   const modeLabel = getLearningModeLabel(learningMode, selectedLanguageId);
   const idlePrompt =
     learningMode === "colors"
@@ -718,7 +718,7 @@ export function TypingGame() {
 
   return (
     <main
-      className="relative min-h-[100svh] overflow-x-hidden overflow-y-auto px-4 py-4 sm:h-[100svh] sm:overflow-hidden sm:px-5 sm:py-5 lg:px-6 lg:py-6"
+      className="relative h-[100svh] overflow-hidden px-3 py-3 sm:px-5 sm:py-5 lg:px-6 lg:py-6"
       style={{ background: gameState.palette.background }}
     >
       <SiteNav
@@ -780,7 +780,7 @@ export function TypingGame() {
         aria-hidden="true"
       />
 
-      <div className={`mx-auto flex min-h-[calc(100svh-2rem)] w-full flex-col sm:h-full sm:min-h-0 ${shellLayoutClasses}`}>
+      <div className={`mx-auto flex h-full min-h-0 w-full flex-col ${shellLayoutClasses}`}>
         {showNumberBoard ? (
           <>
             <div className="lg:hidden">{controls}</div>
@@ -797,7 +797,7 @@ export function TypingGame() {
               palette={gameState.palette}
             />
 
-            <div className="flex min-h-0 flex-1 flex-col gap-3 sm:flex-row lg:items-stretch">
+            <div className="flex min-h-0 flex-1 flex-col gap-2 sm:flex-row sm:gap-3 lg:items-stretch">
               <div className="min-h-0 flex-[0.92]">
                 <BigKeyDisplay
                   displayText={gameState.displayText}
@@ -878,7 +878,7 @@ export function TypingGame() {
             />
 
             {showInputPanel ? (
-              <div className="flex flex-none flex-col gap-3">
+              <div className="flex min-h-0 flex-none flex-col gap-2 sm:gap-3">
                 {showLettersKeyboard ? (
                   <div className="flex justify-center lg:hidden">
                     {autoPlayButton}
@@ -888,7 +888,7 @@ export function TypingGame() {
                 <div className="lg:hidden">{controls}</div>
 
                 {showLettersKeyboard || showComputerKeyboard ? (
-                  <div className="flex min-h-0 gap-3">
+                  <div className="flex min-h-0 gap-2 sm:gap-3">
                     <div className="min-w-0 flex-1">
                       <VirtualKeyboard
                         languagePack={activeLanguagePack}
