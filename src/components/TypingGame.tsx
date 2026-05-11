@@ -281,6 +281,7 @@ export function TypingGame() {
     }
 
     autoPlayCancelRef.current = true;
+    stopVoicePlayback();
     void activateResolvedKey(resolvedKey);
   });
 
@@ -320,11 +321,21 @@ export function TypingGame() {
         speechLang: getPackSpeechLang(selectedLanguagePack),
         textDirection: "ltr",
         assetKey: getNumberAssetKey(n),
-        activeItemId: String(n)
+        activeItemId: String(n),
+        rotatePalette: false
       });
     }
 
-    return activateResolvedKey(resolveVirtualLanguageKey(activeLanguagePack, item as LanguageKey));
+    const resolved = resolveVirtualLanguageKey(activeLanguagePack, item as LanguageKey);
+    return activateDisplayItem({
+      displayText: resolved.displayText,
+      speechText: resolved.speechText,
+      speechLang: resolved.speechLang,
+      textDirection: resolved.textDirection,
+      assetKey: resolved.assetKey,
+      activeItemId: resolved.value,
+      rotatePalette: false
+    });
   });
 
   useEffect(() => {
@@ -458,6 +469,7 @@ export function TypingGame() {
 
   function handleVirtualKeyPress(languageKey: LanguageKey) {
     autoPlayCancelRef.current = true;
+    stopVoicePlayback();
     setIsAutoPlaying(false);
     void activateResolvedKey(resolveVirtualLanguageKey(activeLanguagePack, languageKey));
   }
@@ -661,7 +673,7 @@ export function TypingGame() {
             <div className="flex justify-center">
               <button
                 type="button"
-                onClick={() => { if (isAutoPlaying) { autoPlayCancelRef.current = true; setIsAutoPlaying(false); } else { setIsAutoPlaying(true); } }}
+                onClick={() => { if (isAutoPlaying) { autoPlayCancelRef.current = true; stopVoicePlayback(); setIsAutoPlaying(false); } else { setIsAutoPlaying(true); } }}
                 className="flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-extrabold uppercase tracking-[0.16em] shadow-[0_4px_0_rgba(45,48,71,0.14),0_8px_18px_rgba(45,48,71,0.06)] transition duration-150 hover:-translate-y-px active:translate-y-0.5 active:shadow-[0_1px_0_rgba(45,48,71,0.14)]"
                 style={{
                   background: isAutoPlaying ? gameState.palette.activeKeySurface : gameState.palette.buttonSurface,
@@ -749,7 +761,7 @@ export function TypingGame() {
                   <div className="flex justify-center">
                     <button
                       type="button"
-                      onClick={() => { if (isAutoPlaying) { autoPlayCancelRef.current = true; setIsAutoPlaying(false); } else { setIsAutoPlaying(true); } }}
+                      onClick={() => { if (isAutoPlaying) { autoPlayCancelRef.current = true; stopVoicePlayback(); setIsAutoPlaying(false); } else { setIsAutoPlaying(true); } }}
                       className="flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-extrabold uppercase tracking-[0.16em] shadow-[0_4px_0_rgba(45,48,71,0.14),0_8px_18px_rgba(45,48,71,0.06)] transition duration-150 hover:-translate-y-px active:translate-y-0.5 active:shadow-[0_1px_0_rgba(45,48,71,0.14)]"
                       style={{
                         background: isAutoPlaying ? gameState.palette.activeKeySurface : gameState.palette.buttonSurface,
