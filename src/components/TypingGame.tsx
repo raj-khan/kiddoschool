@@ -49,7 +49,8 @@ import {
 import {
   getNumberAssetKey,
   getNumberBoardValues,
-  getNumberSpeechText
+  getNumberSpeechText,
+  type NumberRangeMax
 } from "@/lib/numbers";
 import {
   loadParentSettingsState,
@@ -102,6 +103,38 @@ function subscribeToFullscreen(callback: () => void) {
 
 function subscribeToNoop() {
   return () => {};
+}
+
+function subscribeToResize(callback: () => void) {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+
+  window.addEventListener("resize", callback);
+
+  return () => {
+    window.removeEventListener("resize", callback);
+  };
+}
+
+function getResponsiveNumberMax(selectedMax: NumberRangeMax): NumberRangeMax {
+  if (typeof window === "undefined") {
+    return selectedMax;
+  }
+
+  if (window.innerWidth >= 1024) {
+    return selectedMax;
+  }
+
+  if (window.innerWidth >= 640) {
+    return Math.min(selectedMax, 50) as NumberRangeMax;
+  }
+
+  if (window.innerWidth >= 430) {
+    return Math.min(selectedMax, 20) as NumberRangeMax;
+  }
+
+  return Math.min(selectedMax, 10) as NumberRangeMax;
 }
 
 function shouldIgnoreShortcut(event: KeyboardEvent): boolean {
@@ -206,6 +239,11 @@ export function TypingGame() {
     subscribeToFullscreen,
     () => typeof document !== "undefined" && Boolean(document.fullscreenElement),
     () => false
+  );
+  const visibleNumberRangeMax = useSyncExternalStore(
+    subscribeToResize,
+    () => getResponsiveNumberMax(numberRangeMax),
+    () => numberRangeMax
   );
 
   useEffect(() => {
@@ -339,7 +377,7 @@ export function TypingGame() {
 
   const showNumberBoard = learningMode === "letters" && selectedLanguageId === "numbers";
   const numberBoardValues = showNumberBoard
-    ? getNumberBoardValues(numberRangeMax, numberBoardOrder, numberBoardRandomSeed)
+    ? getNumberBoardValues(visibleNumberRangeMax, numberBoardOrder, numberBoardRandomSeed)
     : [];
   const startRailItems: readonly StartRailItem[] =
     learningMode === "colors"
@@ -354,7 +392,7 @@ export function TypingGame() {
           }))
       : showNumberBoard
         ? [1, 2, 3, 4]
-            .filter((value) => value <= numberRangeMax)
+            .filter((value) => value <= visibleNumberRangeMax)
             .map((value) => ({
               id: String(value),
               label: String(value),
@@ -652,7 +690,7 @@ export function TypingGame() {
     learningMode === "colors"
       ? colorLearningContent.prompt
       : showNumberBoard
-        ? `Tap any number up to ${numberRangeMax}.`
+        ? `Tap any number up to ${visibleNumberRangeMax}.`
         : activeLanguagePack.prompt;
   const idleHint =
     learningMode === "colors"
@@ -660,7 +698,7 @@ export function TypingGame() {
       : getProfileAwareHint(
           learningMode,
           showNumberBoard
-            ? `The number board is set to 1 through ${numberRangeMax}, and symbols stay in Computer mode.`
+            ? `The number board is showing 1 through ${visibleNumberRangeMax}.`
             : activeLanguagePack.hint,
           kidProfile,
           showNumberBoard
@@ -828,7 +866,7 @@ export function TypingGame() {
               <div className="min-h-0 flex-[1.38]">
                 <NumberBoard
                   values={numberBoardValues}
-                  maxNumber={numberRangeMax}
+                  visibleMaxNumber={visibleNumberRangeMax}
                   onNumberSelect={handleNumberSelect}
                   palette={gameState.palette}
                   activeNumberValue={gameState.activeItemId}

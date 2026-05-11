@@ -2,7 +2,7 @@ import type { Palette } from "@/lib/constants";
 
 type NumberBoardProps = {
   values: readonly number[];
-  maxNumber: number;
+  visibleMaxNumber: number;
   onNumberSelect: (value: number) => void;
   palette: Palette;
   activeNumberValue?: string | null;
@@ -11,7 +11,7 @@ type NumberBoardProps = {
 
 export function NumberBoard({
   values,
-  maxNumber,
+  visibleMaxNumber,
   onNumberSelect,
   palette,
   activeNumberValue = null,
@@ -31,7 +31,7 @@ export function NumberBoard({
             Number board
           </p>
           <p className="mt-1 text-xs font-bold leading-5 sm:text-sm sm:leading-6" style={{ color: palette.detailText }}>
-            Tap any number from 1 to {maxNumber}.
+            Tap any number from 1 to {visibleMaxNumber}.
           </p>
         </div>
         <span
@@ -41,28 +41,20 @@ export function NumberBoard({
             color: palette.badgeText
           }}
         >
-          {`Range 1-${maxNumber} · ${orderLabel}`}
+          {`Range 1-${visibleMaxNumber} · ${orderLabel}`}
         </span>
       </div>
 
       <div className="grid grid-cols-5 gap-1 sm:grid-cols-10 sm:gap-1.5">
         {values.map((value) => {
           const isActive = activeNumberValue === String(value);
-          const visibilityClasses =
-            value <= 10
-              ? ""
-              : value <= 20
-                ? "hidden min-[430px]:block"
-                : value <= 50
-                  ? "hidden sm:block"
-                  : "hidden lg:block";
 
           return (
             <button
               key={value}
               type="button"
               onClick={() => onNumberSelect(value)}
-              className={`${visibilityClasses} aspect-square min-w-0 rounded-[0.8rem] border px-0.5 py-0.5 text-center font-display text-[1rem] leading-none shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition duration-200 ${
+              className={`aspect-square min-w-0 rounded-[0.8rem] border px-0.5 py-0.5 text-center font-display text-[1rem] leading-none shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition duration-200 ${
                 isActive ? "scale-[1.03] -translate-y-0.5" : "hover:-translate-y-0.5"
               } sm:rounded-[0.9rem] sm:text-[0.95rem]`}
               style={{
