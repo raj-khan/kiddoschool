@@ -4,9 +4,15 @@ type NuhaLogoProps = {
   palette: Palette;
   size?: "sm" | "md" | "lg";
   showTagline?: boolean;
+  badgeOnly?: boolean;
 };
 
-export function NuhaLogo({ palette, size = "md", showTagline = true }: NuhaLogoProps) {
+export function NuhaLogo({
+  palette,
+  size = "md",
+  showTagline = true,
+  badgeOnly = false
+}: NuhaLogoProps) {
   const badgePx = size === "sm" ? 32 : size === "lg" ? 44 : 38;
   const titlePx = size === "sm" ? 15 : size === "lg" ? 20 : 17;
   const taglinePx = size === "sm" ? 10 : size === "lg" ? 12 : 11;
@@ -36,22 +42,24 @@ export function NuhaLogo({ palette, size = "md", showTagline = true }: NuhaLogoP
           style={{ width: dotPx, height: dotPx, background: palette.sunny }}
         />
       </div>
-      <div className="flex min-w-0 flex-col leading-none">
-        <div
-          className="font-display tracking-[-0.01em] whitespace-nowrap"
-          style={{ fontSize: titlePx, color: palette.ink, fontWeight: 600 }}
-        >
-          Nuha <span style={{ color: palette.primaryDeep, fontWeight: 700 }}>Keyboard</span>
-        </div>
-        {showTagline ? (
+      {!badgeOnly ? (
+        <div className="flex min-w-0 flex-col leading-none">
           <div
-            className="mt-1 font-body whitespace-nowrap"
-            style={{ fontSize: taglinePx, color: palette.inkSoft, fontWeight: 600 }}
+            className="font-display tracking-[-0.01em] whitespace-nowrap"
+            style={{ fontSize: titlePx, color: palette.ink, fontWeight: 600 }}
           >
-            Hear it. See it. Learn it.
+            Nuha <span style={{ color: palette.primaryDeep, fontWeight: 700 }}>Keyboard</span>
           </div>
-        ) : null}
-      </div>
+          {showTagline ? (
+            <div
+              className="mt-1 font-body whitespace-nowrap"
+              style={{ fontSize: taglinePx, color: palette.inkSoft, fontWeight: 600 }}
+            >
+              Hear it. See it. Learn it.
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }

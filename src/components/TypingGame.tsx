@@ -169,7 +169,7 @@ function AutoPlayButton({
     <button
       type="button"
       onClick={onToggle}
-      className={`flex items-center justify-center gap-2 rounded-full font-body text-sm uppercase tracking-[0.14em] transition duration-150 hover:-translate-y-px active:translate-y-0.5 ${
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-full font-body text-sm uppercase tracking-[0.14em] transition duration-150 hover:-translate-y-px active:translate-y-0.5 ${
         stacked ? "w-full px-4 py-2.5" : "px-4 py-2"
       }`}
       style={{
@@ -796,11 +796,16 @@ export function TypingGame() {
 
       <div className="relative z-10 mx-auto flex h-full min-h-0 w-full max-w-5xl flex-col gap-2 pt-14 sm:gap-3 sm:pt-16">
         {/* Header (logo + quick controls) */}
-        <header className="flex flex-none flex-wrap items-center justify-between gap-2">
-          <div className="hidden sm:block">
-            <NuhaLogo palette={palette} size="md" />
+        <header className="flex flex-none items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <span className="sm:hidden">
+              <NuhaLogo palette={palette} size="sm" badgeOnly />
+            </span>
+            <span className="hidden sm:inline-flex">
+              <NuhaLogo palette={palette} size="md" />
+            </span>
           </div>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <span className="hidden sm:inline-flex">
               {showAutoPlay ? (
                 <AutoPlayButton
@@ -905,9 +910,9 @@ export function TypingGame() {
           ) : null}
         </div>
 
-        {/* Compact bottom rail: recent chips + mode tabs (single row, responsive) */}
+        {/* Compact bottom rail: recent chips (sm+ only) + mode tabs */}
         <div className="flex flex-none flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-          <div className="min-w-0 sm:flex-1">
+          <div className="hidden min-w-0 sm:block sm:flex-1">
             <RecentChipsRail chips={gameState.recent} palette={palette} compact />
           </div>
           <div className="min-w-0 sm:w-[22rem] md:w-[26rem]">

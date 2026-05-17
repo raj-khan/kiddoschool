@@ -101,7 +101,7 @@ export function BigKeyDisplay({
           style={{
             color: palette.ink,
             fontWeight: 700,
-            fontSize: constrained ? "clamp(1.25rem,3.2vh,2rem)" : "clamp(1.5rem,4vh,2.6rem)"
+            fontSize: constrained ? "clamp(1.1rem,2.8vh,1.75rem)" : "clamp(1.35rem,3.6vh,2.4rem)"
           }}
         >
           Press{" "}
@@ -116,7 +116,7 @@ export function BigKeyDisplay({
           !
         </h1>
         <p
-          className="mt-0.5 font-body text-xs sm:text-sm"
+          className="mt-0.5 hidden font-body text-xs sm:block sm:text-sm"
           style={{ color: palette.inkSoft, fontWeight: 600 }}
         >
           Hear the sound, see the letter, and learn your keyboard.

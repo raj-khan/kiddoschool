@@ -49,7 +49,7 @@ export function SiteNav({ currentPath, overlay = false }: SiteNavProps) {
           <Link
             href="/"
             aria-label={`${SITE_NAME} home`}
-            className={`inline-flex items-center justify-center rounded-full p-1 transition ${
+            className={`inline-flex h-10 w-10 items-center justify-center rounded-full transition ${
               currentPath === "/" ? "bg-slate-900" : "hover:bg-white"
             }`}
           >
@@ -60,7 +60,7 @@ export function SiteNav({ currentPath, overlay = false }: SiteNavProps) {
           <Link
             href="/contribute"
             aria-label="Support"
-            className={`inline-flex items-center justify-center rounded-full p-1 transition ${
+            className={`inline-flex h-10 w-10 items-center justify-center rounded-full transition ${
               currentPath === "/contribute" ? "bg-slate-900" : "hover:bg-white"
             }`}
           >

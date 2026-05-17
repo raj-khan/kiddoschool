@@ -295,15 +295,26 @@ export function ParentSettings({
       <button
         type="button"
         onClick={onToggle}
-        className="fixed right-4 top-4 z-30 flex items-center gap-3 rounded-full border px-3 py-2 shadow-[0_18px_60px_rgba(255,255,255,0.25)] backdrop-blur-xl transition hover:-translate-y-0.5 sm:right-6 sm:top-6"
+        className="fixed right-3 top-3 z-30 inline-flex h-11 w-11 items-center justify-center rounded-full border shadow-[0_10px_30px_rgba(15,35,57,0.08)] backdrop-blur-xl transition hover:-translate-y-0.5 sm:right-6 sm:top-6 sm:h-auto sm:w-auto sm:gap-3 sm:rounded-full sm:px-3 sm:py-2"
         style={{
           background: palette.shell,
           borderColor: palette.shellBorder
         }}
+        aria-label="Open parent settings"
         aria-expanded={isOpen}
         aria-controls="parent-settings-panel"
       >
-        <div className="flex items-center -space-x-2">
+        <span
+          className="grid h-7 w-7 place-items-center rounded-full sm:hidden"
+          style={{ background: `${palette.primary}1a`, color: palette.primaryDeep }}
+          aria-hidden="true"
+        >
+          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.08a1.7 1.7 0 0 0-1.11-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06A2 2 0 1 1 4.16 16.94l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.08a1.7 1.7 0 0 0 1.55-1.11 1.7 1.7 0 0 0-.34-1.87l-.06-.06A2 2 0 1 1 7.06 4.16l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.08a1.7 1.7 0 0 0 1 1.51 1.7 1.7 0 0 0 1.87-.34l.06-.06A2 2 0 1 1 19.84 7.06l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.08a1.7 1.7 0 0 0-1.51 1z" />
+          </svg>
+        </span>
+        <div className="hidden items-center -space-x-2 sm:flex">
           <span
             className="grid h-11 w-11 place-items-center rounded-full border"
             style={{ background: palette.badgeSurface, borderColor: palette.buttonBorder }}

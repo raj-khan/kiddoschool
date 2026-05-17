@@ -63,8 +63,8 @@ export function ModeTabsRail({
             role="tab"
             aria-selected={isActive}
             onClick={() => onSelectTab(tabId)}
-            className={`flex flex-1 min-w-[5.5rem] items-center justify-center gap-1.5 rounded-xl font-display transition ${
-              compact ? "px-2 py-2 text-xs" : "px-3 py-2.5 text-sm"
+            className={`flex flex-1 min-w-[4.5rem] items-center justify-center gap-1.5 rounded-xl font-display transition active:translate-y-0.5 ${
+              compact ? "min-h-10 px-2 py-2 text-xs sm:min-h-11" : "min-h-11 px-3 py-2.5 text-sm"
             }`}
             style={{
               background: isActive ? palette.primary : "transparent",
