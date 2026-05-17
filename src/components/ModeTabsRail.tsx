@@ -63,22 +63,24 @@ export function ModeTabsRail({
             role="tab"
             aria-selected={isActive}
             onClick={() => onSelectTab(tabId)}
-            className={`flex flex-1 min-w-[5.5rem] items-center justify-center gap-1.5 rounded-xl font-display font-bold transition ${
+            className={`flex flex-1 min-w-[5.5rem] items-center justify-center gap-1.5 rounded-xl font-display transition ${
               compact ? "px-2 py-2 text-xs" : "px-3 py-2.5 text-sm"
             }`}
             style={{
               background: isActive ? palette.primary : "transparent",
               color: isActive ? "#fff" : palette.ink,
+              fontWeight: 600,
               boxShadow: isActive ? `0 3px 0 ${palette.primaryDeep}` : "none"
             }}
           >
             <span
-              className="grid place-items-center rounded-md text-[11px] font-extrabold"
+              className="font-key grid place-items-center rounded-md text-[11px]"
               style={{
                 width: 20,
                 height: 20,
                 background: isActive ? "rgba(255,255,255,0.25)" : `${palette.primary}1a`,
-                color: isActive ? "#fff" : palette.primaryDeep
+                color: isActive ? "#fff" : palette.primaryDeep,
+                fontWeight: 700
               }}
               aria-hidden="true"
             >

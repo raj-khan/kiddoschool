@@ -59,9 +59,10 @@ export function ColorPaletteBar({
                 aria-hidden="true"
               />
               <span
-                className="block text-center font-display font-bold leading-tight"
+                className="block text-center font-display leading-tight"
                 style={{
                   color: palette.ink,
+                  fontWeight: 600,
                   fontSize: "clamp(10px, 1.2vw, 13px)"
                 }}
               >

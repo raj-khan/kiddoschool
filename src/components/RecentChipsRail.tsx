@@ -22,15 +22,15 @@ export function RecentChipsRail({ chips, palette, compact = false }: RecentChips
       aria-label="Recent keys"
     >
       <div
-        className="shrink-0 pl-1 pr-1 text-[11px] font-extrabold uppercase tracking-[0.2em]"
-        style={{ color: palette.inkSoft }}
+        className="shrink-0 px-1 text-[11px] uppercase tracking-[0.2em]"
+        style={{ color: palette.inkSoft, fontWeight: 700 }}
       >
         Recent
       </div>
       {chips.length === 0 ? (
         <span
-          className="text-xs italic sm:text-sm"
-          style={{ color: palette.inkSoft }}
+          className="font-body text-xs italic sm:text-sm"
+          style={{ color: palette.inkSoft, fontWeight: 600 }}
         >
           your keys will appear here
         </span>
@@ -39,12 +39,13 @@ export function RecentChipsRail({ chips, palette, compact = false }: RecentChips
           <div
             key={chip.id}
             dir={chip.direction}
-            className={`${index === 0 ? "nuha-chip-in" : ""} shrink-0 inline-flex items-center gap-1.5 rounded-2xl font-display font-bold ${
+            className={`${index === 0 ? "nuha-chip-in" : ""} font-key shrink-0 inline-flex items-center gap-1.5 rounded-2xl ${
               compact ? "px-2.5 py-1.5 text-sm" : "px-3 py-2 text-base"
             }`}
             style={{
               background: "#fff",
               color: palette.ink,
+              fontWeight: 700,
               boxShadow: `0 3px 0 ${chip.color}66, 0 0 0 1px ${palette.cardLine} inset`
             }}
           >
@@ -56,8 +57,8 @@ export function RecentChipsRail({ chips, palette, compact = false }: RecentChips
             <span className="min-w-[14px] text-center">{chip.display}</span>
             {chip.isSymbol && chip.label ? (
               <span
-                className="ml-1 text-[11px] font-semibold normal-case"
-                style={{ color: palette.inkSoft }}
+                className="font-body ml-1 text-[11px] normal-case"
+                style={{ color: palette.inkSoft, fontWeight: 600 }}
               >
                 {chip.label}
               </span>

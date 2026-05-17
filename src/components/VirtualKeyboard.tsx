@@ -83,7 +83,7 @@ export function VirtualKeyboard({
               <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M10 14h6M6 18h12" />
             </svg>
           </span>
-          <p className="font-display text-base font-bold" style={{ color: palette.ink }}>
+          <p className="font-display text-base" style={{ color: palette.ink, fontWeight: 600 }}>
             Virtual keyboard
           </p>
         </div>
@@ -105,10 +105,11 @@ export function VirtualKeyboard({
                   key={`${languagePack.id}-${rowIndex}-${keyIndex}`}
                   type="button"
                   onClick={() => onKeyPress(languageKey)}
-                  className={`${keyFlex(languageKey)} ${keyTextSize(languageKey, dense)} ${bengaliExtras} ${keyMinHeight} grid place-items-center rounded-xl font-display font-bold leading-none transition duration-150 hover:-translate-y-px active:translate-y-0.5`}
+                  className={`${keyFlex(languageKey)} ${keyTextSize(languageKey, dense)} ${bengaliExtras} ${keyMinHeight} font-key grid place-items-center rounded-xl leading-none transition duration-150 hover:-translate-y-px active:translate-y-0.5`}
                   style={{
                     background: isActive ? palette.primary : "#fff",
                     color: isActive ? "#fff" : palette.ink,
+                    fontWeight: 700,
                     boxShadow: isActive
                       ? `0 4px 0 ${palette.primaryDeep}, 0 0 0 1px ${palette.primaryDeep} inset`
                       : `0 3px 0 ${palette.cardShadow}, 0 0 0 1px ${palette.cardLine} inset`
@@ -119,8 +120,11 @@ export function VirtualKeyboard({
                     <span className="flex flex-col items-center gap-0.5 leading-none">
                       <span>{languageKey.label ?? languageKey.value}</span>
                       <span
-                        className="font-body text-[9px] font-semibold tracking-wide"
-                        style={{ color: isActive ? "rgba(255,255,255,0.85)" : palette.inkSoft }}
+                        className="font-body text-[9px] tracking-wide"
+                        style={{
+                          color: isActive ? "rgba(255,255,255,0.85)" : palette.inkSoft,
+                          fontWeight: 600
+                        }}
                       >
                         {languageKey.name}
                       </span>

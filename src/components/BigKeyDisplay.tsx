@@ -97,9 +97,10 @@ export function BigKeyDisplay({
       {/* Hero text */}
       <div className="flex-none px-2 text-center">
         <h1
-          className="font-display font-bold tracking-[-0.02em] leading-[1.05]"
+          className="font-display tracking-[-0.02em] leading-[1.05]"
           style={{
             color: palette.ink,
+            fontWeight: 700,
             fontSize: constrained ? "clamp(1.25rem,3.2vh,2rem)" : "clamp(1.5rem,4vh,2.6rem)"
           }}
         >
@@ -115,8 +116,8 @@ export function BigKeyDisplay({
           !
         </h1>
         <p
-          className="mt-0.5 text-xs font-semibold sm:text-sm"
-          style={{ color: palette.inkSoft }}
+          className="mt-0.5 font-body text-xs sm:text-sm"
+          style={{ color: palette.inkSoft, fontWeight: 600 }}
         >
           Hear the sound, see the letter, and learn your keyboard.
         </p>
@@ -201,9 +202,10 @@ export function BigKeyDisplay({
         {/* Big key glyph */}
         {!colorScene ? (
           <div
-            className={`font-display font-extrabold leading-none ${displayTextClasses} mt-1 select-none`}
+            className={`font-key leading-none ${displayTextClasses} mt-1 select-none`}
             style={{
               color: heroColor,
+              fontWeight: 700,
               textShadow: !isIdle ? `0 6px 0 ${palette.cardShadow}55` : "none",
               letterSpacing: "-0.04em"
             }}
@@ -215,10 +217,11 @@ export function BigKeyDisplay({
 
         {/* "I said: X" pill */}
         <div
-          className="mt-2 inline-flex max-w-[92%] items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold sm:text-sm"
+          className="mt-2 inline-flex max-w-[92%] items-center gap-2 rounded-full px-3 py-1 font-body text-xs sm:text-sm"
           style={{
             background: isIdle ? `${palette.inkSoft}1f` : `${palette.primary}22`,
-            color: palette.ink
+            color: palette.ink,
+            fontWeight: 700
           }}
         >
           <WaveIcon color={isIdle ? palette.inkSoft : palette.primary} animate={!isIdle} />
@@ -229,8 +232,11 @@ export function BigKeyDisplay({
 
         {/* Encouragement */}
         <p
-          className="mt-1.5 font-display text-sm font-semibold sm:text-base"
-          style={{ color: isIdle ? palette.inkSoft : palette.primaryDeep }}
+          className="mt-1.5 font-display text-base sm:text-lg"
+          style={{
+            color: isIdle ? palette.inkSoft : palette.primaryDeep,
+            fontWeight: 600
+          }}
         >
           {cheerText}
         </p>
@@ -300,10 +306,11 @@ type BadgeProps = { text: string; palette: Palette; muted?: boolean };
 function Badge({ text, palette, muted = false }: BadgeProps) {
   return (
     <span
-      className="rounded-full px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em]"
+      className="rounded-full px-2.5 py-1 text-[11px] uppercase tracking-[0.16em]"
       style={{
         background: muted ? `${palette.inkSoft}14` : `${palette.primary}1a`,
-        color: muted ? palette.inkSoft : palette.primaryDeep
+        color: muted ? palette.inkSoft : palette.primaryDeep,
+        fontWeight: 700
       }}
     >
       {text}
@@ -337,8 +344,8 @@ function LetterFormCard({
       }}
     >
       <p
-        className="text-[10px] font-extrabold uppercase tracking-[0.18em]"
-        style={{ color: palette.inkSoft }}
+        className="text-[10px] uppercase tracking-[0.18em]"
+        style={{ color: palette.inkSoft, fontWeight: 700 }}
       >
         {label}
       </p>
@@ -346,8 +353,8 @@ function LetterFormCard({
         className={`mt-1.5 leading-none ${italic ? "italic" : ""} ${outline ? "text-transparent" : ""}`}
         style={{
           color: outline ? "transparent" : palette.keyText,
-          fontFamily: font ?? '"Fredoka","Nunito",sans-serif',
-          fontWeight: 800,
+          fontFamily: font ?? '"Quicksand","Fredoka","Trebuchet MS",sans-serif',
+          fontWeight: 700,
           fontSize: outline ? "2.25rem" : "2.75rem",
           letterSpacing: outline ? "0.18em" : "-0.02em",
           WebkitTextStroke: outline ? `1.6px ${palette.keyText}` : undefined

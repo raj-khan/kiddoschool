@@ -169,12 +169,13 @@ function AutoPlayButton({
     <button
       type="button"
       onClick={onToggle}
-      className={`flex items-center justify-center gap-2 rounded-full text-sm font-extrabold uppercase tracking-[0.14em] transition duration-150 hover:-translate-y-px active:translate-y-0.5 ${
+      className={`flex items-center justify-center gap-2 rounded-full font-body text-sm uppercase tracking-[0.14em] transition duration-150 hover:-translate-y-px active:translate-y-0.5 ${
         stacked ? "w-full px-4 py-2.5" : "px-4 py-2"
       }`}
       style={{
         background: isAutoPlaying ? palette.primary : "#fff",
         color: isAutoPlaying ? "#fff" : palette.ink,
+        fontWeight: 800,
         boxShadow: isAutoPlaying
           ? `0 3px 0 ${palette.primaryDeep}`
           : `0 0 0 1px ${palette.cardLine} inset, 0 3px 0 ${palette.cardShadow}55`

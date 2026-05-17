@@ -20,11 +20,12 @@ export function NuhaLogo({ palette, size = "md", showTagline = true }: NuhaLogoP
         aria-hidden="true"
       >
         <div
-          className="absolute inset-0 grid place-items-center rounded-[0.85rem] font-display font-bold text-white"
+          className="absolute inset-0 grid place-items-center rounded-[0.85rem] font-key text-white"
           style={{
             background: `linear-gradient(135deg, ${palette.primary}, ${palette.accent})`,
             boxShadow: `0 ${Math.round(badgePx * 0.1)}px 0 ${palette.primaryDeep}`,
             fontSize: Math.round(badgePx * 0.55),
+            fontWeight: 700,
             letterSpacing: -0.5
           }}
         >
@@ -37,15 +38,15 @@ export function NuhaLogo({ palette, size = "md", showTagline = true }: NuhaLogoP
       </div>
       <div className="flex min-w-0 flex-col leading-none">
         <div
-          className="font-display font-semibold tracking-[-0.01em] whitespace-nowrap"
-          style={{ fontSize: titlePx, color: palette.ink }}
+          className="font-display tracking-[-0.01em] whitespace-nowrap"
+          style={{ fontSize: titlePx, color: palette.ink, fontWeight: 600 }}
         >
-          Nuha <span style={{ color: palette.primaryDeep }}>Keyboard</span>
+          Nuha <span style={{ color: palette.primaryDeep, fontWeight: 700 }}>Keyboard</span>
         </div>
         {showTagline ? (
           <div
-            className="mt-1 font-semibold whitespace-nowrap"
-            style={{ fontSize: taglinePx, color: palette.inkSoft }}
+            className="mt-1 font-body whitespace-nowrap"
+            style={{ fontSize: taglinePx, color: palette.inkSoft, fontWeight: 600 }}
           >
             Hear it. See it. Learn it.
           </div>

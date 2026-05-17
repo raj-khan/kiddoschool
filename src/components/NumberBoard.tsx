@@ -35,14 +35,15 @@ export function NumberBoard({
       }}
     >
       <div className="mb-2 hidden items-end justify-between gap-2 sm:flex">
-        <p className="font-display text-base font-bold" style={{ color: palette.ink }}>
+        <p className="font-display text-base" style={{ color: palette.ink, fontWeight: 600 }}>
           Number board
         </p>
         <span
-          className="rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.16em]"
+          className="rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.16em]"
           style={{
             background: `${palette.primary}1a`,
-            color: palette.primaryDeep
+            color: palette.primaryDeep,
+            fontWeight: 700
           }}
         >
           {`1–${visibleMaxNumber} · ${orderLabel}`}
@@ -63,16 +64,17 @@ export function NumberBoard({
               key={value}
               type="button"
               onClick={() => onNumberSelect(value)}
-              className={`grid place-items-center rounded-xl font-display font-extrabold leading-none transition duration-150 hover:-translate-y-px active:translate-y-0.5 ${
+              className={`font-key grid place-items-center rounded-xl leading-none transition duration-150 hover:-translate-y-px active:translate-y-0.5 ${
                 isActive ? "-translate-y-px" : ""
               }`}
               style={{
                 background: isActive ? palette.primary : "#fff",
                 color: isActive ? "#fff" : palette.ink,
+                fontWeight: 700,
                 boxShadow: isActive
                   ? `0 4px 0 ${palette.primaryDeep}, 0 0 0 1px ${palette.primaryDeep} inset`
                   : `0 3px 0 ${palette.cardShadow}, 0 0 0 1px ${palette.cardLine} inset`,
-                fontSize: "clamp(1.25rem, 4.2vw, 2.5rem)",
+                fontSize: "clamp(1.5rem, 4.6vw, 2.8rem)",
                 letterSpacing: "-0.02em"
               }}
               aria-pressed={isActive}
