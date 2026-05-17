@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@fontsource/fredoka": "^5.2.10",
+    "@fontsource/quicksand": "^5.2.10",
     "next": "^16.1.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"

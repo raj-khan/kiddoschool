@@ -3,9 +3,14 @@
 @import "@fontsource/fredoka/600.css";
 @import "@fontsource/fredoka/700.css";
 @import "@fontsource/nunito/400.css";
+@import "@fontsource/nunito/500.css";
 @import "@fontsource/nunito/600.css";
 @import "@fontsource/nunito/700.css";
 @import "@fontsource/nunito/800.css";
+@import "@fontsource/quicksand/400.css";
+@import "@fontsource/quicksand/500.css";
+@import "@fontsource/quicksand/600.css";
+@import "@fontsource/quicksand/700.css";
 @import "tailwindcss";
 
 :root {
@@ -35,11 +40,21 @@ body {
 }
 
 .font-body {
-  font-family: "Nunito", "Trebuchet MS", ui-sans-serif, system-ui, sans-serif;
+  font-family: "Nunito", "Quicksand", "Trebuchet MS", ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
 }
 
 .font-display {
-  font-family: "Fredoka", "Baloo 2", ui-rounded, system-ui, sans-serif;
+  font-family: "Fredoka", "Quicksand", "Baloo 2", ui-rounded, system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Big key glyph and on-screen keyboard letters: Quicksand is geometric and
+   matches the rounded letterforms early-readers learn in school. */
+.font-key {
+  font-family: "Quicksand", "Fredoka", "Trebuchet MS", ui-rounded, sans-serif;
+  font-feature-settings: "tnum" 1, "ss01" 1;
+  letter-spacing: -0.02em;
 }
 
 .play-surface {
