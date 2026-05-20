@@ -9,7 +9,7 @@ import { ModeTabsRail, type ModeTabId } from "@/components/ModeTabsRail";
 import { NumberBoard } from "@/components/NumberBoard";
 import { NuhaLogo } from "@/components/NuhaLogo";
 import { ParentSettings } from "@/components/ParentSettings";
-import { RecentChipsRail, type RecentChipEntry } from "@/components/RecentChipsRail";
+import { RecentKeys, type RecentKeyEntry } from "@/components/RecentKeys";
 import { SiteNav } from "@/components/SiteNav";
 import { VirtualKeyboard } from "@/components/VirtualKeyboard";
 import {
@@ -69,7 +69,7 @@ type GameState = {
   burstKey: number;
   activeItemId: string | null;
   previewColor: string | null;
-  recent: RecentChipEntry[];
+  recent: RecentKeyEntry[];
 };
 
 const INITIAL_PALETTE = PALETTES[0];
@@ -88,7 +88,7 @@ const INITIAL_STATE: GameState = {
 };
 
 const INTERACTIVE_TAGS = new Set(["BUTTON", "A", "INPUT", "SELECT", "TEXTAREA"]);
-const RECENT_CHIP_LIMIT = 12;
+const RECENT_KEY_LIMIT = 12;
 
 function subscribeToFullscreen(callback: () => void) {
   if (typeof document === "undefined") {
@@ -296,16 +296,16 @@ export function TypingGame() {
     return color;
   }
 
-  function pushRecentChip(entry: Omit<RecentChipEntry, "id" | "color">, palette: Palette) {
+  function pushRecentChip(entry: Omit<RecentKeyEntry, "id" | "color">, palette: Palette) {
     recentIdRef.current += 1;
-    const chip: RecentChipEntry = {
+    const chip: RecentKeyEntry = {
       id: recentIdRef.current,
       color: nextChipColor(palette),
       ...entry
     };
     setGameState((current) => ({
       ...current,
-      recent: [chip, ...current.recent].slice(0, RECENT_CHIP_LIMIT)
+      recent: [chip, ...current.recent].slice(0, RECENT_KEY_LIMIT)
     }));
   }
 
@@ -910,12 +910,14 @@ export function TypingGame() {
           ) : null}
         </div>
 
-        {/* Compact bottom rail: recent chips (sm+ only) + mode tabs */}
-        <div className="flex flex-none flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-          <div className="hidden min-w-0 sm:block sm:flex-1">
-            <RecentChipsRail chips={gameState.recent} palette={palette} compact />
-          </div>
-          <div className="min-w-0 sm:w-[22rem] md:w-[26rem]">
+        {/* Bottom rail: roomy recent keys + mode tabs */}
+        <div className="flex flex-none flex-col gap-2 sm:flex-row sm:items-stretch sm:gap-3">
+          {!showAuxiliaryPanel ? (
+            <div className="min-w-0 flex-1">
+              <RecentKeys keys={gameState.recent} palette={palette} compact={showAuxiliaryPanel} />
+            </div>
+          ) : null}
+          <div className={`min-w-0 ${showAuxiliaryPanel ? "" : "sm:w-[22rem] md:w-[26rem]"}`}>
             <ModeTabsRail
               palette={palette}
               learningMode={learningMode}
