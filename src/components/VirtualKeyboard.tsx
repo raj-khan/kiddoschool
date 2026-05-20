@@ -105,13 +105,17 @@ export function VirtualKeyboard({
                   key={`${languagePack.id}-${rowIndex}-${keyIndex}`}
                   type="button"
                   onClick={() => onKeyPress(languageKey)}
-                  className={`${keyFlex(languageKey)} ${keyTextSize(languageKey, dense)} ${bengaliExtras} ${keyMinHeight} font-key grid place-items-center rounded-xl leading-none transition duration-150 hover:-translate-y-px active:translate-y-0.5`}
+                  className={`${keyFlex(languageKey)} ${keyTextSize(languageKey, dense)} ${bengaliExtras} ${keyMinHeight} nuha-key-tap font-key grid place-items-center rounded-xl leading-none transition duration-150 hover:-translate-y-px ${
+                    isActive ? "-translate-y-px scale-[1.04]" : ""
+                  }`}
                   style={{
-                    background: isActive ? palette.primary : "#fff",
+                    background: isActive
+                      ? `linear-gradient(135deg, ${palette.primary}, ${palette.primaryDeep})`
+                      : "#fff",
                     color: isActive ? "#fff" : palette.ink,
                     fontWeight: 700,
                     boxShadow: isActive
-                      ? `0 4px 0 ${palette.primaryDeep}, 0 0 0 1px ${palette.primaryDeep} inset`
+                      ? `0 6px 0 ${palette.primaryDeep}, 0 12px 22px ${palette.activeKeyGlow}, 0 0 0 2px ${palette.primaryDeep} inset`
                       : `0 3px 0 ${palette.cardShadow}, 0 0 0 1px ${palette.cardLine} inset`
                   }}
                   aria-pressed={isActive}

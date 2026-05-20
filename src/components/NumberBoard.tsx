@@ -64,15 +64,17 @@ export function NumberBoard({
               key={value}
               type="button"
               onClick={() => onNumberSelect(value)}
-              className={`font-key grid place-items-center rounded-xl leading-none transition duration-150 hover:-translate-y-px active:translate-y-0.5 ${
-                isActive ? "-translate-y-px" : ""
+              className={`nuha-key-tap font-key grid place-items-center rounded-xl leading-none transition duration-150 hover:-translate-y-px ${
+                isActive ? "-translate-y-px scale-[1.05]" : ""
               }`}
               style={{
-                background: isActive ? palette.primary : "#fff",
+                background: isActive
+                  ? `linear-gradient(135deg, ${palette.primary}, ${palette.primaryDeep})`
+                  : "#fff",
                 color: isActive ? "#fff" : palette.ink,
                 fontWeight: 700,
                 boxShadow: isActive
-                  ? `0 4px 0 ${palette.primaryDeep}, 0 0 0 1px ${palette.primaryDeep} inset`
+                  ? `0 6px 0 ${palette.primaryDeep}, 0 14px 24px ${palette.activeKeyGlow}, 0 0 0 2px ${palette.primaryDeep} inset`
                   : `0 3px 0 ${palette.cardShadow}, 0 0 0 1px ${palette.cardLine} inset`,
                 fontSize: "clamp(1.5rem, 4.6vw, 2.8rem)",
                 letterSpacing: "-0.02em"

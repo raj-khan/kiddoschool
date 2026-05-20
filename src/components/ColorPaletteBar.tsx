@@ -37,13 +37,13 @@ export function ColorPaletteBar({
               key={colorOption.id}
               type="button"
               onClick={() => onColorSelect(colorOption.id)}
-              className={`flex flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 transition duration-150 hover:-translate-y-px ${
-                isActive ? "-translate-y-px" : ""
+              className={`nuha-key-tap flex flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 transition duration-150 hover:-translate-y-px ${
+                isActive ? "-translate-y-px scale-[1.04]" : ""
               }`}
               style={{
                 background: "#fff",
                 boxShadow: isActive
-                  ? `0 4px 0 ${colorOption.ring}, 0 0 0 2px ${colorOption.ring} inset`
+                  ? `0 6px 0 ${colorOption.ring}, 0 14px 22px ${colorOption.swatch}40, 0 0 0 2px ${colorOption.ring} inset`
                   : `0 3px 0 ${palette.cardShadow}, 0 0 0 1px ${palette.cardLine} inset`
               }}
               aria-pressed={isActive}
