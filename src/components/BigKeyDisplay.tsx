@@ -29,21 +29,31 @@ type BigKeyDisplayProps = {
 };
 
 const FLOATING_ECHOES = [
-  { className: "left-[3%] top-[6%] -rotate-12",    delay: "0ms",   duration: "4800ms" },
-  { className: "right-[4%] top-[12%] rotate-8",    delay: "100ms", duration: "4400ms" },
+  { className: "left-[3%] top-[6%] -rotate-12", delay: "0ms", duration: "4800ms" },
+  { className: "right-[4%] top-[12%] rotate-8", delay: "100ms", duration: "4400ms" },
   { className: "left-[10%] bottom-[20%] rotate-6", delay: "200ms", duration: "5100ms" },
-  { className: "right-[10%] bottom-[12%] -rotate-9", delay: "300ms", duration: "4700ms" },
-  { className: "left-[40%] top-[4%] -rotate-4",   delay: "150ms", duration: "4600ms" },
-  { className: "right-[36%] bottom-[6%] rotate-5", delay: "250ms", duration: "5000ms" }
+  { className: "right-[10%] bottom-[12%] -rotate-9", delay: "300ms", duration: "4700ms" }
 ] as const;
 
 const SPARKLES = [
-  { char: "✦", className: "left-[22%] top-[28%]",   delay: "0ms",   size: "text-xl"   },
-  { char: "★", className: "right-[20%] top-[22%]",  delay: "80ms",  size: "text-base" },
-  { char: "✦", className: "left-[18%] bottom-[26%]", delay: "160ms", size: "text-sm"  },
-  { char: "★", className: "right-[22%] bottom-[22%]", delay: "240ms", size: "text-base" },
-  { char: "✦", className: "left-[46%] top-[18%]",   delay: "120ms", size: "text-sm"   }
+  { char: "✦", className: "left-[18%] top-[24%]", delay: "0ms", size: "text-xl" },
+  { char: "★", className: "right-[18%] top-[20%]", delay: "80ms", size: "text-base" },
+  { char: "✦", className: "left-[14%] bottom-[26%]", delay: "160ms", size: "text-sm" },
+  { char: "★", className: "right-[16%] bottom-[20%]", delay: "240ms", size: "text-base" }
 ] as const;
+
+function WaveIcon({ color, animate }: { color: string; animate: boolean }) {
+  return (
+    <span
+      className={animate ? "nuha-wave-icon" : "inline-block"}
+      style={{ width: 14, height: 14 }}
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.4" strokeLinecap="round">
+        <path d="M3 10v4M8 7v10M13 4v16M18 8v8M23 11v2" />
+      </svg>
+    </span>
+  );
+}
 
 export function BigKeyDisplay({
   displayText,
@@ -69,280 +79,340 @@ export function BigKeyDisplay({
   kidAgeLabel = null,
   kidPlayStyleLabel = null
 }: BigKeyDisplayProps) {
+  void languageNativeLabel;
   const isIdle = displayText === null;
   const uppercaseLetter = activeEnglishLetter?.toUpperCase() ?? null;
   const lowercaseLetter = activeEnglishLetter?.toLowerCase() ?? null;
   const showEnglishLetterForms = uppercaseLetter !== null && lowercaseLetter !== null;
+  const heroColor = isIdle ? palette.primary : palette.keyText;
+  const echoText = !isIdle && displayText && displayText.length <= 3 ? displayText : floatingEchoText;
+  const colorScene = previewColor && activeColorId !== null;
+
   const displayTextClasses = displayText
     ? immersive
-      ? "text-[clamp(6rem,24vw,16rem)]"
+      ? "text-[clamp(5rem,18vh,15rem)]"
       : constrained
-        ? "text-[clamp(3rem,9vw,6rem)] sm:text-[clamp(3.5rem,10vw,7rem)]"
-      : "text-[clamp(4rem,15vw,11rem)] sm:text-[clamp(5rem,15vw,12rem)]"
-    : immersive
-      ? "text-[clamp(2.8rem,7vw,5.6rem)]"
-      : constrained
-        ? "text-[clamp(2rem,5.8vw,3.6rem)]"
-      : "text-[clamp(2.5rem,7vw,4.8rem)]";
-  const stageHeightClasses = immersive ? "flex-1 min-h-0" : constrained ? "flex-[1_1_0%] min-h-0" : "min-h-[30rem]";
-  const contentPaddingClasses = immersive ? "py-3 sm:py-6" : constrained ? "py-2 sm:py-4" : "py-6 sm:py-12";
-  const emojiClasses = immersive
-    ? "mb-7 h-28 w-28 text-6xl sm:h-32 sm:w-32 sm:text-7xl"
-    : constrained
-      ? "mb-2 h-16 w-16 text-4xl sm:mb-4 sm:h-24 sm:w-24 sm:text-6xl"
-      : "mb-5 h-24 w-24 text-5xl sm:h-28 sm:w-28 sm:text-6xl";
-  const messageClasses = immersive
-    ? "mt-5 text-4xl sm:text-5xl"
-    : constrained
-      ? "mt-3 text-[clamp(1.7rem,4.6vw,2.8rem)]"
-      : "mt-4 text-3xl sm:text-4xl";
-  const letterCardClasses =
-    "rounded-[1.35rem] border px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] backdrop-blur-sm";
+        ? "text-[clamp(3.5rem,12vh,8rem)]"
+        : "text-[clamp(4rem,16vh,12rem)]"
+    : "text-[clamp(2.5rem,8vh,5rem)]";
+
+  const emojiBoxClasses = constrained
+    ? "h-14 w-14 text-3xl sm:h-16 sm:w-16 sm:text-4xl"
+    : "h-16 w-16 text-4xl sm:h-20 sm:w-20 sm:text-5xl";
+
+  const labelText = isIdle
+    ? "Press any key to begin"
+    : speechText
+      ? `I said: ${speechText}`
+      : "I said: it";
+  const cheerText = isIdle ? "It speaks and sparkles." : message || "Great job!";
 
   return (
     <section
-      className={`play-surface stage-entrance flex w-full ${stageHeightClasses} flex-col justify-between rounded-[2rem] border px-4 py-4 shadow-[0_26px_80px_rgba(255,255,255,0.18)] backdrop-blur-xl sm:rounded-[2.5rem] sm:px-8 sm:py-7 lg:px-10 lg:py-8`}
-      style={{
-        background: previewColor
-          ? `linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.5)), ${previewColor}`
-          : palette.shell,
-        borderColor: palette.shellBorder
-      }}
+      className="stage-entrance flex h-full w-full min-h-0 flex-col"
+      aria-live="polite"
     >
-      <div className={`hidden flex-wrap items-start justify-between sm:flex ${constrained ? "gap-3" : "gap-4"}`}>
-        <div className={constrained ? "space-y-2" : "space-y-3"}>
-          <p
-            className={`font-display uppercase ${constrained ? "text-base tracking-[0.26em] sm:text-lg" : "text-lg tracking-[0.32em] sm:text-xl"}`}
-            style={{ color: palette.badgeText }}
+      {/* Hero text */}
+      <div className="flex-none px-2 text-center">
+        <h1
+          className="font-display tracking-[-0.02em] leading-[1.05]"
+          style={{
+            color: palette.ink,
+            fontWeight: 700,
+            fontSize: constrained ? "clamp(1.1rem,2.8vh,1.75rem)" : "clamp(1.35rem,3.6vh,2.4rem)"
+          }}
+        >
+          Press{" "}
+          <span
+            className="bg-clip-text text-transparent"
+            style={{ backgroundImage: `linear-gradient(120deg, ${palette.primary}, ${palette.accent})` }}
           >
-            Nuha Keyboard
-          </p>
-          <div
-            className={`flex flex-wrap gap-2 font-extrabold uppercase ${constrained ? "text-[10px] tracking-[0.18em] sm:text-xs" : "text-xs tracking-[0.22em] sm:text-sm"}`}
-          >
-            <span
-              className="rounded-full px-3 py-2"
-              style={{
-                background: palette.badgeSurface,
-                color: palette.badgeText
-              }}
-            >
-              {modeLabel}
-            </span>
-            <span
-              className="rounded-full px-3 py-2"
-              style={{
-                background: palette.badgeSurface,
-                color: palette.badgeText
-              }}
-            >
-              {languageLabel}
-            </span>
-            <span
-              className="hidden rounded-full px-3 py-2 sm:inline-flex"
-              style={{
-                background: palette.badgeSurface,
-                color: palette.badgeText
-              }}
-            >
-              {languageNativeLabel}
-            </span>
-            <span
-              className="hidden rounded-full px-3 py-2 sm:inline-flex"
-              style={{
-                background: palette.badgeSurface,
-                color: palette.badgeText
-              }}
-            >
-              {voiceStatus}
-            </span>
-            {kidAgeLabel ? (
-              <span
-                className="hidden rounded-full px-3 py-2 sm:inline-flex"
-                style={{
-                  background: palette.badgeSurface,
-                  color: palette.badgeText
-                }}
-              >
-                {kidAgeLabel}
-              </span>
-            ) : null}
-            {kidPlayStyleLabel ? (
-              <span
-                className="hidden rounded-full px-3 py-2 sm:inline-flex"
-                style={{
-                  background: palette.badgeSurface,
-                  color: palette.badgeText
-                }}
-              >
-                {kidPlayStyleLabel}
-              </span>
-            ) : null}
-          </div>
-        </div>
-        {!immersive && !constrained ? (
-          <p
-            className="max-w-xs text-sm font-bold leading-6 sm:text-base"
-            style={{ color: palette.detailText }}
-          >
-            Every press should feel like a tiny celebration.
-          </p>
-        ) : null}
+            any key
+          </span>
+          !
+        </h1>
+        <p
+          className="mt-0.5 hidden font-body text-xs sm:block sm:text-sm"
+          style={{ color: palette.inkSoft, fontWeight: 600 }}
+        >
+          Hear the sound, see the letter, and learn your keyboard.
+        </p>
       </div>
 
-      <div className={`grid min-h-0 flex-1 place-items-center overflow-hidden ${contentPaddingClasses}`}>
-        <div
-          key={burstKey}
-          className={`mx-auto flex w-full ${constrained ? "max-w-3xl" : "max-w-4xl"} flex-col items-center text-center ${isIdle ? "soft-rise" : "key-burst"}`}
-        >
-          {previewColor && activeColorId ? (
+      {/* Pillow key card — flex to fill remaining vertical space */}
+      <div
+        key={burstKey}
+        className="nuha-keycard relative mx-auto mt-2 flex w-full min-h-0 max-w-[44rem] flex-1 flex-col items-center justify-center overflow-hidden rounded-[1.5rem] px-3 py-3 sm:mt-3 sm:rounded-[2rem] sm:px-6 sm:py-5"
+        style={{
+          background: previewColor
+            ? `linear-gradient(160deg, rgba(255,255,255,0.92), rgba(255,255,255,0.65)), ${previewColor}`
+            : palette.card,
+          boxShadow: `0 6px 0 ${palette.cardShadow}, 0 0 0 1px ${palette.cardLine} inset, 0 18px 40px -20px ${palette.cardShadow}`
+        }}
+      >
+        {/* Confetti dots */}
+        {!isIdle && (
+          <>
+            <span
+              className="nuha-confetti"
+              style={{ top: 16, left: 22, width: 10, height: 10, background: palette.sunny }}
+            />
+            <span
+              className="nuha-confetti"
+              style={{
+                top: 30,
+                right: 28,
+                width: 8,
+                height: 8,
+                background: palette.accent,
+                animationDelay: "100ms"
+              }}
+            />
+            <span
+              className="nuha-confetti"
+              style={{
+                bottom: 22,
+                left: 32,
+                width: 9,
+                height: 9,
+                borderRadius: 2,
+                background: palette.mint,
+                transform: "rotate(20deg)",
+                animationDelay: "50ms"
+              }}
+            />
+            <span
+              className="nuha-confetti"
+              style={{
+                bottom: 32,
+                right: 18,
+                width: 12,
+                height: 12,
+                background: palette.sky,
+                opacity: 0.75,
+                animationDelay: "150ms"
+              }}
+            />
+          </>
+        )}
+
+        {colorScene ? (
+          <div className="min-h-0 flex-1 w-full">
             <ColorSceneIllustration
-              colorId={activeColorId}
-              swatch={previewColor}
+              colorId={activeColorId!}
+              swatch={previewColor!}
               profile={kidProfile}
             />
-          ) : (
+          </div>
+        ) : (
+          <>
+            {/* Emoji burst — the visual hero */}
             <div
-              className={`${emojiClasses} grid place-items-center rounded-[2rem] shadow-[0_22px_45px_rgba(255,255,255,0.28)]`}
+              className={`${emojiBoxClasses} ${isIdle ? "nuha-mascot-bob" : "nuha-mascot-cheer"} grid place-items-center rounded-[1.25rem]`}
               style={{
-                background: palette.badgeSurface,
-                color: palette.badgeText
+                background: `linear-gradient(135deg, ${palette.primary}1a, ${palette.accent}1a)`,
+                boxShadow: `0 4px 0 ${palette.cardShadow}40, 0 0 0 1px ${palette.cardLine} inset`
               }}
               aria-hidden="true"
             >
-              {emoji}
+              <span>{emoji}</span>
             </div>
-          )}
 
-          <div className="relative isolate mt-1 w-full">
-            {floatingEchoText && !isIdle ? (
-              <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-                {FLOATING_ECHOES.map((echo, index) => (
-                  <span
-                    key={`echo-${burstKey}-${index}`}
-                    className={`key-echo absolute font-display text-[clamp(1.3rem,3.6vw,2.6rem)] ${echo.className}`}
-                    style={{
-                      color: palette.badgeText,
-                      background: palette.badgeSurface,
-                      animationDelay: echo.delay,
-                      animationDuration: echo.duration,
-                      boxShadow: `0 14px 28px ${palette.keyShadow}`
-                    }}
-                  >
-                    {floatingEchoText}
+            {/* Big key glyph + sparkle echoes */}
+            <div className="relative isolate mt-1 w-full">
+              {echoText && !isIdle ? (
+                <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+                  {FLOATING_ECHOES.map((echo, index) => (
+                    <span
+                      key={`echo-${burstKey}-${index}`}
+                      className={`key-echo absolute font-key text-[clamp(1.1rem,3vw,2.2rem)] ${echo.className}`}
+                      style={{
+                        color: heroColor,
+                        background: `${palette.primary}1a`,
+                        animationDelay: echo.delay,
+                        animationDuration: echo.duration,
+                        boxShadow: `0 6px 14px ${palette.cardShadow}66`
+                      }}
+                    >
+                      {echoText}
+                    </span>
+                  ))}
+                  {SPARKLES.map((sparkle, index) => (
+                    <span
+                      key={`sparkle-${burstKey}-${index}`}
+                      className={`absolute ${sparkle.size} ${sparkle.className}`}
+                      style={{
+                        color: palette.accent,
+                        animationName: "sparklePop",
+                        animationDuration: "1100ms",
+                        animationTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+                        animationFillMode: "both",
+                        animationDelay: sparkle.delay
+                      }}
+                    >
+                      {sparkle.char}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+
+              <div
+                className={`font-key relative z-10 leading-none ${displayTextClasses} text-center select-none`}
+                style={{
+                  color: heroColor,
+                  fontWeight: 700,
+                  letterSpacing: "-0.04em",
+                  textShadow: !isIdle ? `0 6px 0 ${palette.cardShadow}55` : "none"
+                }}
+                dir={displayDirection}
+              >
+                {displayText ?? "?"}
+              </div>
+            </div>
+
+            {/* "I said: X" pill */}
+            <div
+              className="mt-2 inline-flex max-w-[92%] items-center gap-2 rounded-full px-3 py-1 font-body text-xs sm:text-sm"
+              style={{
+                background: isIdle ? `${palette.inkSoft}1f` : `${palette.primary}22`,
+                color: palette.ink,
+                fontWeight: 700
+              }}
+            >
+              <WaveIcon color={isIdle ? palette.inkSoft : palette.primary} animate={!isIdle} />
+              <span className="truncate" dir={displayDirection}>
+                {labelText}
+              </span>
+            </div>
+
+            {/* Encouragement */}
+            <p
+              className="mt-1.5 font-display text-base sm:text-lg"
+              style={{
+                color: isIdle ? palette.inkSoft : palette.primaryDeep,
+                fontWeight: 600
+              }}
+            >
+              {cheerText}
+            </p>
+
+            {/* Badges row (sm+) */}
+            {!constrained && !immersive ? (
+              <div className="mt-2 hidden flex-wrap items-center justify-center gap-1 sm:flex">
+                <Badge text={modeLabel} palette={palette} />
+                <Badge text={languageLabel} palette={palette} />
+                <span className="hidden md:inline">
+                  <Badge text={voiceStatus} palette={palette} muted />
+                </span>
+                {kidAgeLabel ? (
+                  <span className="hidden md:inline">
+                    <Badge text={kidAgeLabel} palette={palette} muted />
                   </span>
-                ))}
-                {SPARKLES.map((sparkle, index) => (
-                  <span
-                    key={`sparkle-${burstKey}-${index}`}
-                    className={`absolute ${sparkle.size} ${sparkle.className}`}
-                    style={{
-                      color: palette.activeKeyText,
-                      animationName: "sparklePop",
-                      animationDuration: "1100ms",
-                      animationTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-                      animationFillMode: "both",
-                      animationDelay: sparkle.delay
-                    }}
-                  >
-                    {sparkle.char}
+                ) : null}
+                {kidPlayStyleLabel ? (
+                  <span className="hidden lg:inline">
+                    <Badge text={kidPlayStyleLabel} palette={palette} muted />
                   </span>
-                ))}
+                ) : null}
               </div>
             ) : null}
-
-            <div
-              className={`relative z-10 font-display ${displayTextClasses} leading-none tracking-[-0.04em]`}
-              style={{
-                color: palette.keyText,
-                textShadow: displayText
-                  ? `0 2px 0 ${palette.activeKeyBorder}, 0 4px 0 ${palette.activeKeyBorder}, 0 6px 10px rgba(0,0,0,0.07)`
-                  : `0 12px 40px ${palette.keyShadow}`
-              }}
-              dir={displayDirection}
-            >
-              {displayText ?? idlePrompt}
-            </div>
-          </div>
-
-          <p
-            className={`${messageClasses} max-w-2xl font-display leading-tight`}
-            style={{ color: palette.messageText }}
-          >
-            {displayText ? message : "Ready to play"}
-          </p>
-
-          <p
-            className={`max-w-xl font-bold leading-6 ${constrained ? "mt-3 text-xs sm:text-sm" : "mt-4 text-sm sm:text-base"}`}
-            style={{ color: palette.detailText }}
-            aria-live="polite"
-          >
-            {speechText
-              ? showEnglishLetterForms
-                ? `Capital ${uppercaseLetter} and small ${lowercaseLetter}.`
-                : `Says ${speechText}`
-              : idleHint}
-          </p>
-
-          {showEnglishLetterForms ? (
-            <div className="mt-4 grid w-full max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
-              <div
-                className={letterCardClasses}
-                style={{ background: palette.buttonSurface, borderColor: palette.buttonBorder }}
-              >
-                <p className="text-xs font-extrabold uppercase tracking-[0.18em]" style={{ color: palette.detailText }}>
-                  Capital
-                </p>
-                <p className="mt-2 font-display text-5xl leading-none" style={{ color: palette.keyText }}>
-                  {uppercaseLetter}
-                </p>
-              </div>
-
-              <div
-                className={letterCardClasses}
-                style={{ background: palette.buttonSurface, borderColor: palette.buttonBorder }}
-              >
-                <p className="text-xs font-extrabold uppercase tracking-[0.18em]" style={{ color: palette.detailText }}>
-                  Small
-                </p>
-                <p className="mt-2 font-body text-5xl font-extrabold leading-none" style={{ color: palette.keyText }}>
-                  {lowercaseLetter}
-                </p>
-              </div>
-
-              <div
-                className={letterCardClasses}
-                style={{ background: palette.buttonSurface, borderColor: palette.buttonBorder }}
-              >
-                <p className="text-xs font-extrabold uppercase tracking-[0.18em]" style={{ color: palette.detailText }}>
-                  Handwriting
-                </p>
-                <p
-                  className="mt-2 text-5xl italic leading-none"
-                  style={{ color: palette.keyText, fontFamily: '"Comic Sans MS", "Marker Felt", cursive' }}
-                >
-                  {lowercaseLetter}
-                </p>
-              </div>
-
-              <div
-                className={letterCardClasses}
-                style={{ background: palette.buttonSurface, borderColor: palette.buttonBorder }}
-              >
-                <p className="text-xs font-extrabold uppercase tracking-[0.18em]" style={{ color: palette.detailText }}>
-                  Trace
-                </p>
-                <p
-                  className="mt-2 font-display text-4xl leading-none tracking-[0.18em] text-transparent"
-                  style={{ WebkitTextStroke: `1.6px ${palette.keyText}` }}
-                >
-                  {`${uppercaseLetter}${lowercaseLetter}${lowercaseLetter}`}
-                </p>
-              </div>
-            </div>
-          ) : null}
-        </div>
+          </>
+        )}
       </div>
+
+      {/* Letter forms — always visible when active letter (responsive grid) */}
+      {showEnglishLetterForms ? (
+        <div className="mt-2 grid w-full grid-cols-2 gap-1.5 sm:mt-3 sm:grid-cols-4 sm:gap-2">
+          <LetterFormCard label="Capital" value={uppercaseLetter!} palette={palette} />
+          <LetterFormCard label="Small" value={lowercaseLetter!} palette={palette} />
+          <LetterFormCard
+            label="Hand"
+            value={lowercaseLetter!}
+            palette={palette}
+            font='"Comic Sans MS","Marker Felt",cursive'
+            italic
+          />
+          <LetterFormCard
+            label="Trace"
+            value={`${uppercaseLetter}${lowercaseLetter}${lowercaseLetter}`}
+            palette={palette}
+            outline
+          />
+        </div>
+      ) : null}
+
+      {/* Idle hint */}
+      <p
+        className="mx-auto mt-1 hidden max-w-2xl flex-none px-2 text-center text-xs font-body sm:block sm:text-sm"
+        style={{ color: palette.inkSoft, fontWeight: 600 }}
+      >
+        {isIdle ? idleHint || idlePrompt : speechText ? `Says ${speechText}.` : idleHint}
+      </p>
     </section>
+  );
+}
+
+type BadgeProps = { text: string; palette: Palette; muted?: boolean };
+
+function Badge({ text, palette, muted = false }: BadgeProps) {
+  return (
+    <span
+      className="rounded-full px-2.5 py-1 text-[11px] uppercase tracking-[0.16em]"
+      style={{
+        background: muted ? `${palette.inkSoft}14` : `${palette.primary}1a`,
+        color: muted ? palette.inkSoft : palette.primaryDeep,
+        fontWeight: 700
+      }}
+    >
+      {text}
+    </span>
+  );
+}
+
+type LetterFormCardProps = {
+  label: string;
+  value: string;
+  palette: Palette;
+  font?: string;
+  italic?: boolean;
+  outline?: boolean;
+};
+
+function LetterFormCard({
+  label,
+  value,
+  palette,
+  font,
+  italic = false,
+  outline = false
+}: LetterFormCardProps) {
+  return (
+    <div
+      className="rounded-2xl px-2 py-2 text-center sm:px-3 sm:py-2.5"
+      style={{
+        background: palette.card,
+        boxShadow: `0 3px 0 ${palette.cardShadow}, 0 0 0 1px ${palette.cardLine} inset`
+      }}
+    >
+      <p
+        className="text-[9px] uppercase tracking-[0.18em] sm:text-[10px]"
+        style={{ color: palette.inkSoft, fontWeight: 700 }}
+      >
+        {label}
+      </p>
+      <p
+        className={`mt-1 leading-none ${italic ? "italic" : ""} ${outline ? "text-transparent" : ""}`}
+        style={{
+          color: outline ? "transparent" : palette.keyText,
+          fontFamily: font ?? '"Quicksand","Fredoka","Trebuchet MS",sans-serif',
+          fontWeight: 700,
+          fontSize: outline ? "1.6rem" : "1.9rem",
+          letterSpacing: outline ? "0.18em" : "-0.02em",
+          WebkitTextStroke: outline ? `1.4px ${palette.keyText}` : undefined
+        }}
+      >
+        {value}
+      </p>
+    </div>
   );
 }

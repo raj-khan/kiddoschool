@@ -5,11 +5,12 @@ import { startTransition, useEffect, useEffectEvent, useRef, useState, useSyncEx
 import { BigKeyDisplay } from "@/components/BigKeyDisplay";
 import { ColorPaletteBar } from "@/components/ColorPaletteBar";
 import { ControlButtons } from "@/components/ControlButtons";
+import { ModeTabsRail, type ModeTabId } from "@/components/ModeTabsRail";
 import { NumberBoard } from "@/components/NumberBoard";
+import { NuhaLogo } from "@/components/NuhaLogo";
 import { ParentSettings } from "@/components/ParentSettings";
-import { PlayActionDock } from "@/components/PlayActionDock";
+import { RecentKeys, type RecentKeyEntry } from "@/components/RecentKeys";
 import { SiteNav } from "@/components/SiteNav";
-import { StartRail, type StartRailItem } from "@/components/StartRail";
 import { VirtualKeyboard } from "@/components/VirtualKeyboard";
 import {
   EMOJIS,
@@ -21,7 +22,6 @@ import {
 import {
   getColorLearningContent,
   getColorOptionById,
-  getResolvedColorOptions,
   getLearningModeLabel,
   type ColorOptionId,
   type LearningMode
@@ -31,15 +31,13 @@ import {
   getKidPlayStyleLabel,
   getProfileAwareHint,
   loadKidProfile,
-  subscribeToKidProfile,
-  type KidProfile
+  subscribeToKidProfile
 } from "@/lib/kid-profile";
 import {
   ARABIC_FEMALE_VOICE,
   ARABIC_MALE_VOICE,
   COLORS_VOICE,
   ENGLISH_COMPUTER_PRACTICE_PACK,
-  findLanguageKeyByValue,
   getLanguagePackById,
   type LanguageKey,
   type LanguagePack,
@@ -71,6 +69,7 @@ type GameState = {
   burstKey: number;
   activeItemId: string | null;
   previewColor: string | null;
+  recent: RecentKeyEntry[];
 };
 
 const INITIAL_PALETTE = PALETTES[0];
@@ -84,10 +83,12 @@ const INITIAL_STATE: GameState = {
   palette: INITIAL_PALETTE,
   burstKey: 0,
   activeItemId: null,
-  previewColor: null
+  previewColor: null,
+  recent: []
 };
 
 const INTERACTIVE_TAGS = new Set(["BUTTON", "A", "INPUT", "SELECT", "TEXTAREA"]);
+const RECENT_KEY_LIMIT = 12;
 
 function subscribeToFullscreen(callback: () => void) {
   if (typeof document === "undefined") {
@@ -137,14 +138,6 @@ function getResponsiveNumberMax(selectedMax: NumberRangeMax): NumberRangeMax {
   return Math.min(selectedMax, 10) as NumberRangeMax;
 }
 
-function getIsDesktopViewport(): boolean {
-  if (typeof window === "undefined") {
-    return true;
-  }
-
-  return window.innerWidth >= 1024;
-}
-
 function shouldIgnoreShortcut(event: KeyboardEvent): boolean {
   if (INTERACTIVE_TAGS.has((event.target as HTMLElement | null)?.tagName ?? "")) {
     return true;
@@ -176,21 +169,21 @@ function AutoPlayButton({
     <button
       type="button"
       onClick={onToggle}
-      className={`flex items-center justify-center gap-2 rounded-full border text-sm font-extrabold uppercase tracking-[0.16em] shadow-[0_4px_0_rgba(45,48,71,0.14),0_8px_18px_rgba(45,48,71,0.06)] transition duration-150 hover:-translate-y-px active:translate-y-0.5 active:shadow-[0_1px_0_rgba(45,48,71,0.14)] ${
-        stacked ? "w-full px-4 py-3" : "px-5 py-2"
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-full font-body text-sm uppercase tracking-[0.14em] transition duration-150 hover:-translate-y-px active:translate-y-0.5 ${
+        stacked ? "w-full px-4 py-2.5" : "px-4 py-2"
       }`}
       style={{
-        background: isAutoPlaying ? palette.activeKeySurface : palette.buttonSurface,
-        borderColor: isAutoPlaying ? palette.activeKeyBorder : palette.buttonBorder,
-        color: isAutoPlaying ? palette.activeKeyText : palette.buttonText,
+        background: isAutoPlaying ? palette.primary : "#fff",
+        color: isAutoPlaying ? "#fff" : palette.ink,
+        fontWeight: 800,
         boxShadow: isAutoPlaying
-          ? `0 4px 0 ${palette.activeKeyBorder}, 0 14px 26px ${palette.activeKeyGlow}`
-          : undefined
+          ? `0 3px 0 ${palette.primaryDeep}`
+          : `0 0 0 1px ${palette.cardLine} inset, 0 3px 0 ${palette.cardShadow}55`
       }}
       aria-pressed={isAutoPlaying}
     >
-      <span className="text-base leading-none">{isAutoPlaying ? "■" : "▶"}</span>
-      {isAutoPlaying ? "Stop" : "Play all"}
+      <span aria-hidden="true">{isAutoPlaying ? "■" : "▶"}</span>
+      <span>{isAutoPlaying ? "Stop" : "Play all"}</span>
     </button>
   );
 }
@@ -202,6 +195,8 @@ export function TypingGame() {
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const autoPlayIndexRef = useRef(0);
   const autoPlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const chipColorIndexRef = useRef(0);
+  const recentIdRef = useRef(0);
 
   const parentSettings = useSyncExternalStore(
     subscribeToParentSettingsState,
@@ -253,11 +248,6 @@ export function TypingGame() {
     () => getResponsiveNumberMax(numberRangeMax),
     () => numberRangeMax
   );
-  const isDesktopViewport = useSyncExternalStore(
-    subscribeToResize,
-    getIsDesktopViewport,
-    () => true
-  );
 
   useEffect(() => {
     mutedRef.current = isMuted;
@@ -299,6 +289,26 @@ export function TypingGame() {
     return getActiveLanguagePack(nextLearningMode, languageId).direction;
   }
 
+  function nextChipColor(palette: Palette): string {
+    const chips = palette.chips;
+    const color = chips[chipColorIndexRef.current % chips.length];
+    chipColorIndexRef.current += 1;
+    return color;
+  }
+
+  function pushRecentChip(entry: Omit<RecentKeyEntry, "id" | "color">, palette: Palette) {
+    recentIdRef.current += 1;
+    const chip: RecentKeyEntry = {
+      id: recentIdRef.current,
+      color: nextChipColor(palette),
+      ...entry
+    };
+    setGameState((current) => ({
+      ...current,
+      recent: [chip, ...current.recent].slice(0, RECENT_KEY_LIMIT)
+    }));
+  }
+
   async function activateDisplayItem(item: {
     displayText: string;
     speechText: string;
@@ -310,6 +320,8 @@ export function TypingGame() {
     rotatePalette?: boolean;
     skipBurst?: boolean;
     voice?: VoiceConfig;
+    chipKind?: "letter" | "number" | "symbol" | "color";
+    chipLabel?: string;
   }) {
     const shouldRotatePalette = item.rotatePalette ?? true;
     const nextPalette = shouldRotatePalette
@@ -331,6 +343,7 @@ export function TypingGame() {
 
     startTransition(() => {
       setGameState((currentState) => ({
+        ...currentState,
         displayText: item.displayText,
         speechText: item.speechText,
         displayDirection: item.textDirection,
@@ -342,6 +355,18 @@ export function TypingGame() {
         previewColor: item.previewColor ?? null
       }));
     });
+
+    if (!item.skipBurst) {
+      pushRecentChip(
+        {
+          display: item.displayText.length <= 3 ? item.displayText : item.displayText.slice(0, 2),
+          label: item.chipLabel ?? item.speechText,
+          direction: item.textDirection,
+          isSymbol: item.chipKind === "symbol" || item.chipKind === "color"
+        },
+        nextPalette
+      );
+    }
   }
 
   async function activateResolvedKey(resolvedKey: ResolvedLanguageKey) {
@@ -351,7 +376,13 @@ export function TypingGame() {
       speechLang: resolvedKey.speechLang,
       textDirection: resolvedKey.textDirection,
       assetKey: resolvedKey.assetKey,
-      activeItemId: resolvedKey.value
+      activeItemId: resolvedKey.value,
+      chipKind: /^[A-Za-z]$/.test(resolvedKey.displayText)
+        ? "letter"
+        : /^[0-9]$/.test(resolvedKey.displayText)
+          ? "number"
+          : "symbol",
+      chipLabel: resolvedKey.speechText
     });
   }
 
@@ -392,35 +423,6 @@ export function TypingGame() {
   const numberBoardValues = showNumberBoard
     ? getNumberBoardValues(visibleNumberRangeMax, numberBoardOrder, numberBoardRandomSeed)
     : [];
-  const startRailItems: readonly StartRailItem[] =
-    learningMode === "colors"
-      ? getResolvedColorOptions(selectedLanguageId)
-          .slice(0, 4)
-          .map((color) => ({
-            id: color.id,
-            label: color.label,
-            ariaLabel: `Try ${color.label}`,
-            direction: color.textDirection,
-            swatch: color.swatch
-          }))
-      : showNumberBoard
-        ? [1, 2, 3, 4]
-            .filter((value) => value <= visibleNumberRangeMax)
-            .map((value) => ({
-              id: String(value),
-              label: String(value),
-              ariaLabel: `Try number ${value}`
-            }))
-        : activeLanguagePack.rows
-            .flat()
-            .filter((languageKey) => !languageKey.size || languageKey.size === "regular")
-            .slice(0, 4)
-            .map((languageKey) => ({
-              id: languageKey.value,
-              label: languageKey.label ?? languageKey.displayText ?? languageKey.value,
-              ariaLabel: `Try ${languageKey.name ?? languageKey.label ?? languageKey.value}`,
-              direction: languageKey.textDirection ?? activeLanguagePack.direction
-            }));
 
   const playAutoPlayItem = useEffectEvent((): boolean => {
     const items = showNumberBoard
@@ -440,46 +442,21 @@ export function TypingGame() {
     if (showNumberBoard) {
       const n = item as number;
       const displayText = String(n);
-      startTransition(() => {
-        setGameState((s) => ({
-          ...s,
-          displayText,
-          speechText: getNumberSpeechText(n),
-          displayDirection: "ltr",
-          activeItemId: displayText,
-          previewColor: null
-        }));
+      void activateDisplayItem({
+        displayText,
+        speechText: getNumberSpeechText(n),
+        speechLang: getPackSpeechLang(selectedLanguagePack),
+        textDirection: "ltr",
+        assetKey: getNumberAssetKey(n),
+        activeItemId: displayText,
+        voice: selectedLanguagePack.voice,
+        chipKind: "number"
       });
-      if (!mutedRef.current) {
-        void speakWithVoice({
-          text: getNumberSpeechText(n),
-          assetKey: getNumberAssetKey(n),
-          voice: selectedLanguagePack.voice,
-          speechLang: getPackSpeechLang(selectedLanguagePack)
-        });
-      }
       return true;
     }
 
     const resolved = resolveVirtualLanguageKey(activeLanguagePack, item as LanguageKey);
-    startTransition(() => {
-      setGameState((s) => ({
-        ...s,
-        displayText: resolved.displayText,
-        speechText: resolved.speechText,
-        displayDirection: resolved.textDirection,
-        activeItemId: resolved.value,
-        previewColor: null
-      }));
-    });
-    if (!mutedRef.current) {
-      void speakWithVoice({
-        text: resolved.speechText,
-        assetKey: resolved.assetKey,
-        voice: activeLanguagePack.voice,
-        speechLang: resolved.speechLang
-      });
-    }
+    void activateResolvedKey(resolved);
     return true;
   });
 
@@ -530,7 +507,8 @@ export function TypingGame() {
       ...INITIAL_STATE,
       displayDirection: getIdleDisplayDirection(learningMode, selectedLanguageId),
       palette: currentState.palette,
-      burstKey: currentState.burstKey + 1
+      burstKey: currentState.burstKey + 1,
+      recent: []
     }));
   }
 
@@ -550,7 +528,8 @@ export function TypingGame() {
       ...INITIAL_STATE,
       displayDirection: getIdleDisplayDirection(learningMode, languageId),
       palette: currentState.palette,
-      burstKey: currentState.burstKey + 1
+      burstKey: currentState.burstKey + 1,
+      recent: []
     }));
   }
 
@@ -570,7 +549,8 @@ export function TypingGame() {
       ...INITIAL_STATE,
       displayDirection: getIdleDisplayDirection(nextLearningMode, selectedLanguageId),
       palette: currentState.palette,
-      burstKey: currentState.burstKey + 1
+      burstKey: currentState.burstKey + 1,
+      recent: []
     }));
   }
 
@@ -618,7 +598,8 @@ export function TypingGame() {
       speechLang: getPackSpeechLang(selectedLanguagePack),
       textDirection: "ltr",
       assetKey: getNumberAssetKey(value),
-      activeItemId: displayText
+      activeItemId: displayText,
+      chipKind: "number"
     });
   }
 
@@ -634,26 +615,10 @@ export function TypingGame() {
       activeItemId: resolvedColor.id,
       previewColor: resolvedColor.swatch,
       rotatePalette: false,
-      voice: COLORS_VOICE
+      voice: COLORS_VOICE,
+      chipKind: "color",
+      chipLabel: resolvedColor.label
     });
-  }
-
-  function handleStartRailSelect(item: StartRailItem) {
-    if (learningMode === "colors") {
-      handleColorSelect(item.id as ColorOptionId);
-      return;
-    }
-
-    if (showNumberBoard) {
-      handleNumberSelect(Number(item.id));
-      return;
-    }
-
-    const languageKey = findLanguageKeyByValue(activeLanguagePack, item.id);
-
-    if (languageKey) {
-      handleVirtualKeyPress(languageKey);
-    }
   }
 
   async function handleToggleFullscreen() {
@@ -680,25 +645,59 @@ export function TypingGame() {
     setIsAutoPlaying(true);
   }
 
+  function handleModeTabSelect(tab: ModeTabId) {
+    if (tab === "free") {
+      if (selectedLanguageId !== "english") {
+        handleLanguageChange("english");
+      } else if (learningMode !== "letters") {
+        handleLearningModeChange("letters");
+      }
+      return;
+    }
+    if (tab === "letters") {
+      if (learningMode !== "letters") {
+        handleLearningModeChange("letters");
+      }
+      if (selectedLanguageId === "numbers") {
+        handleLanguageChange("english");
+      }
+      return;
+    }
+    if (tab === "numbers") {
+      if (learningMode !== "letters") {
+        handleLearningModeChange("letters");
+      }
+      if (selectedLanguageId !== "numbers") {
+        handleLanguageChange("numbers");
+      }
+      return;
+    }
+    if (tab === "computer") {
+      if (learningMode !== "computer") {
+        handleLearningModeChange("computer");
+      }
+      return;
+    }
+    if (tab === "colors") {
+      if (learningMode !== "colors") {
+        handleLearningModeChange("colors");
+      }
+      return;
+    }
+  }
+
   const voiceStatus = canSpeak
     ? isMuted
       ? "Voice muted"
       : "Voice ready"
     : "Voice unavailable";
 
-  const effectiveShowVirtualKeyboard = isDesktopViewport ? showVirtualKeyboard : true;
   const showLettersKeyboard =
-    learningMode === "letters" && selectedLanguageId !== "numbers" && effectiveShowVirtualKeyboard;
+    learningMode === "letters" && selectedLanguageId !== "numbers" && showVirtualKeyboard;
   const showComputerKeyboard = learningMode === "computer";
   const showColorPalette = learningMode === "colors";
-  const showInputPanel =
+  const showAuxiliaryPanel =
     showLettersKeyboard || showComputerKeyboard || showColorPalette || showNumberBoard;
-  const isImmersiveStage = !showInputPanel;
-  const shellLayoutClasses = showNumberBoard
-    ? "max-w-7xl gap-2 pt-16 sm:gap-3 sm:pt-19"
-    : showInputPanel
-      ? "max-w-6xl gap-2 pt-16 sm:gap-3 sm:pt-19"
-      : "max-w-4xl justify-center gap-4 pt-17 sm:gap-5 sm:pt-20";
   const modeLabel = getLearningModeLabel(learningMode, selectedLanguageId);
   const idlePrompt =
     learningMode === "colors"
@@ -724,61 +723,23 @@ export function TypingGame() {
     /^[a-z]$/i.test(gameState.activeItemId)
       ? gameState.activeItemId
       : null;
-  const floatingEchoText =
-    learningMode !== "colors" && gameState.displayText && gameState.displayText.length <= 6
-      ? gameState.displayText
-      : null;
-  const numberBoardOrderLabel =
-    numberBoardOrder === "ascending"
-      ? "Straight"
-      : numberBoardOrder === "descending"
-        ? "Reverse"
-        : "Random";
-  const controls = showPlayControls ? (
-    <ControlButtons
-      isMuted={isMuted}
-      isFullscreen={isFullscreen}
-      canFullscreen={canFullscreen}
-      onToggleMute={handleToggleMute}
-      onClear={handleClear}
-      onToggleFullscreen={handleToggleFullscreen}
-      palette={gameState.palette}
-      compact
-    />
-  ) : null;
-  const autoPlayButton = (
-    <AutoPlayButton
-      isAutoPlaying={isAutoPlaying}
-      onToggle={handleToggleAutoPlay}
-      palette={gameState.palette}
-    />
-  );
-  const stackedAutoPlayButton = (
-    <AutoPlayButton
-      isAutoPlaying={isAutoPlaying}
-      onToggle={handleToggleAutoPlay}
-      palette={gameState.palette}
-      stacked
-    />
-  );
+  const floatingEchoText = null;
   const kidAgeLabel = kidProfile ? getKidAgeLabel(kidProfile.ageGroup) : null;
   const kidPlayStyleLabel = kidProfile ? getKidPlayStyleLabel(kidProfile.playStyle) : null;
   const activeColorId =
     learningMode === "colors" && gameState.activeItemId
       ? (gameState.activeItemId as ColorOptionId)
       : null;
+  const palette = gameState.palette;
+  const showAutoPlay = showLettersKeyboard || showNumberBoard;
+  void showPlayControls;
 
   return (
     <main
-      className="relative h-[100svh] overflow-hidden px-3 py-3 sm:px-5 sm:py-5 lg:px-6 lg:py-6"
-      style={{ background: gameState.palette.background }}
+      className="relative h-[100svh] overflow-hidden px-2 pb-2 pt-2 sm:px-4 sm:pb-3 sm:pt-3 lg:px-6"
+      style={{ background: palette.background }}
     >
-      <SiteNav
-        currentPath="/"
-        overlay
-        languagePackId={selectedLanguageId}
-        onLanguageChange={handleLanguageChange}
-      />
+      <SiteNav currentPath="/" overlay />
 
       <ParentSettings
         isOpen={isSettingsOpen}
@@ -813,96 +774,70 @@ export function TypingGame() {
             arabicVoice: voice
           }))
         }
-        palette={gameState.palette}
+        palette={palette}
       />
 
+      {/* Decorative floating orbs */}
       <div
-        className="floating-orb left-[-4rem] top-[-2rem] h-48 w-48 sm:h-60 sm:w-60"
-        style={{ background: gameState.palette.orbOne }}
+        className="floating-orb pointer-events-none -left-12 -top-8 h-40 w-40 sm:h-56 sm:w-56"
+        style={{ background: palette.orbOne }}
         aria-hidden="true"
       />
       <div
-        className="floating-orb floating-orb--slow floating-orb--delay right-[8%] top-[16%] h-36 w-36 sm:h-52 sm:w-52"
-        style={{ background: gameState.palette.orbTwo }}
+        className="floating-orb floating-orb--slow floating-orb--delay pointer-events-none right-[6%] top-[14%] h-28 w-28 sm:h-44 sm:w-44"
+        style={{ background: palette.orbTwo }}
         aria-hidden="true"
       />
       <div
-        className="floating-orb floating-orb--late bottom-[-2rem] right-[-3rem] h-52 w-52 sm:h-72 sm:w-72"
-        style={{ background: gameState.palette.orbThree }}
+        className="floating-orb floating-orb--late pointer-events-none -bottom-12 -right-10 h-48 w-48 sm:h-64 sm:w-64"
+        style={{ background: palette.orbThree }}
         aria-hidden="true"
       />
 
-      <div className={`mx-auto flex h-full min-h-0 w-full flex-col ${shellLayoutClasses}`}>
-        {showNumberBoard ? (
-          <>
-            <div className="lg:hidden">{controls}</div>
-
-            <div className="flex justify-center lg:hidden">
-              {autoPlayButton}
-            </div>
-
-            <StartRail
-              items={startRailItems}
-              activeItemId={gameState.activeItemId}
-              title="Start here"
-              onSelect={handleStartRailSelect}
-              palette={gameState.palette}
+      <div className="relative z-10 mx-auto flex h-full min-h-0 w-full max-w-5xl flex-col gap-2 pt-14 sm:gap-3 sm:pt-16">
+        {/* Header (logo + quick controls) */}
+        <header className="flex flex-none items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <span className="sm:hidden">
+              <NuhaLogo palette={palette} size="sm" badgeOnly />
+            </span>
+            <span className="hidden sm:inline-flex">
+              <NuhaLogo palette={palette} size="md" />
+            </span>
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <span className="hidden sm:inline-flex">
+              {showAutoPlay ? (
+                <AutoPlayButton
+                  isAutoPlaying={isAutoPlaying}
+                  onToggle={handleToggleAutoPlay}
+                  palette={palette}
+                />
+              ) : null}
+            </span>
+            <ControlButtons
+              isMuted={isMuted}
+              isFullscreen={isFullscreen}
+              canFullscreen={canFullscreen}
+              onToggleMute={handleToggleMute}
+              onClear={handleClear}
+              onToggleFullscreen={handleToggleFullscreen}
+              palette={palette}
+              compact
             />
+          </div>
+        </header>
 
-            <div className="flex min-h-0 flex-1 flex-col gap-2 sm:flex-row sm:gap-3 lg:items-stretch">
-              <div className="min-h-0 flex-[0.92]">
-                <BigKeyDisplay
-                  displayText={gameState.displayText}
-                  speechText={gameState.speechText}
-                  displayDirection={gameState.displayDirection}
-                  emoji={gameState.emoji}
-                  message={gameState.message}
-                  palette={gameState.palette}
-                  burstKey={gameState.burstKey}
-                  voiceStatus={voiceStatus}
-                  modeLabel={modeLabel}
-                  languageLabel={activeLanguagePack.label}
-                  languageNativeLabel={activeLanguagePack.nativeLabel}
-                  idlePrompt={idlePrompt}
-                  idleHint={idleHint}
-                  immersive={false}
-                  constrained
-                  previewColor={gameState.previewColor}
-                  activeColorId={activeColorId}
-                  activeEnglishLetter={activeEnglishLetter}
-                  floatingEchoText={floatingEchoText}
-                  kidProfile={kidProfile}
-                  kidAgeLabel={kidAgeLabel}
-                  kidPlayStyleLabel={kidPlayStyleLabel}
-                />
-              </div>
-
-              <div className="min-h-0 flex-[1.38]">
-                <NumberBoard
-                  values={numberBoardValues}
-                  visibleMaxNumber={visibleNumberRangeMax}
-                  onNumberSelect={handleNumberSelect}
-                  palette={gameState.palette}
-                  activeNumberValue={gameState.activeItemId}
-                  orderLabel={numberBoardOrderLabel}
-                />
-              </div>
-
-              <PlayActionDock palette={gameState.palette}>
-                {stackedAutoPlayButton}
-                {controls}
-              </PlayActionDock>
-            </div>
-          </>
-        ) : (
-          <>
+        {/* Play area — key card + (optional) aux panel share remaining height */}
+        <div className="flex min-h-0 flex-1 flex-col gap-2 sm:gap-3">
+          <div className={`min-h-0 ${showAuxiliaryPanel ? "flex-[3_1_0%]" : "flex-1"}`}>
             <BigKeyDisplay
               displayText={gameState.displayText}
               speechText={gameState.speechText}
               displayDirection={gameState.displayDirection}
               emoji={gameState.emoji}
               message={gameState.message}
-              palette={gameState.palette}
+              palette={palette}
               burstKey={gameState.burstKey}
               voiceStatus={voiceStatus}
               modeLabel={modeLabel}
@@ -910,8 +845,8 @@ export function TypingGame() {
               languageNativeLabel={activeLanguagePack.nativeLabel}
               idlePrompt={idlePrompt}
               idleHint={idleHint}
-              immersive={isImmersiveStage}
-              constrained={showInputPanel}
+              immersive={false}
+              constrained={showAuxiliaryPanel}
               previewColor={gameState.previewColor}
               activeColorId={activeColorId}
               activeEnglishLetter={activeEnglishLetter}
@@ -920,59 +855,78 @@ export function TypingGame() {
               kidAgeLabel={kidAgeLabel}
               kidPlayStyleLabel={kidPlayStyleLabel}
             />
+          </div>
 
-            <StartRail
-              items={startRailItems}
-              activeItemId={gameState.activeItemId}
-              title="Start here"
-              onSelect={handleStartRailSelect}
-              palette={gameState.palette}
-            />
-
-            {showInputPanel ? (
-              <div className="flex min-h-0 flex-none flex-col gap-2 sm:gap-3">
-                {showLettersKeyboard ? (
-                  <div className="flex justify-center lg:hidden">
-                    {autoPlayButton}
-                  </div>
+          {showAuxiliaryPanel ? (
+            <div className="flex min-h-0 flex-[4_1_0%] flex-col gap-2 sm:gap-3">
+              {showAutoPlay ? (
+                <div className="flex justify-center sm:hidden">
+                  <AutoPlayButton
+                    isAutoPlaying={isAutoPlaying}
+                    onToggle={handleToggleAutoPlay}
+                    palette={palette}
+                  />
+                </div>
+              ) : null}
+              <div className="min-h-0 flex-1">
+                {showLettersKeyboard || showComputerKeyboard ? (
+                  <VirtualKeyboard
+                    languagePack={activeLanguagePack}
+                    onKeyPress={handleVirtualKeyPress}
+                    palette={palette}
+                    minimal
+                    dense={showComputerKeyboard}
+                    activeKeyValue={gameState.activeItemId}
+                  />
                 ) : null}
 
-                <div className="lg:hidden">{controls}</div>
-
-                {showLettersKeyboard || showComputerKeyboard ? (
-                  <div className="flex min-h-0 gap-2 sm:gap-3">
-                    <div className="min-w-0 flex-1">
-                      <VirtualKeyboard
-                        languagePack={activeLanguagePack}
-                        onKeyPress={handleVirtualKeyPress}
-                        palette={gameState.palette}
-                        minimal
-                        dense={showComputerKeyboard}
-                        activeKeyValue={gameState.activeItemId}
-                      />
-                    </div>
-
-                    <PlayActionDock palette={gameState.palette}>
-                      {showLettersKeyboard ? stackedAutoPlayButton : null}
-                      {controls}
-                    </PlayActionDock>
-                  </div>
+                {showNumberBoard ? (
+                  <NumberBoard
+                    values={numberBoardValues}
+                    visibleMaxNumber={visibleNumberRangeMax}
+                    onNumberSelect={handleNumberSelect}
+                    palette={palette}
+                    activeNumberValue={gameState.activeItemId}
+                    orderLabel={
+                      numberBoardOrder === "ascending"
+                        ? "Straight"
+                        : numberBoardOrder === "descending"
+                          ? "Reverse"
+                          : "Random"
+                    }
+                  />
                 ) : null}
 
                 {showColorPalette ? (
                   <ColorPaletteBar
                     languagePackId={selectedLanguageId}
                     onColorSelect={handleColorSelect}
-                    palette={gameState.palette}
+                    palette={palette}
                     activeColorId={gameState.activeItemId}
                   />
                 ) : null}
               </div>
-            ) : (
-              controls
-            )}
-          </>
-        )}
+            </div>
+          ) : null}
+        </div>
+
+        {/* Bottom rail: roomy recent keys + mode tabs */}
+        <div className="flex flex-none flex-col gap-2 sm:flex-row sm:items-stretch sm:gap-3">
+          {!showAuxiliaryPanel ? (
+            <div className="min-w-0 flex-1">
+              <RecentKeys keys={gameState.recent} palette={palette} compact={showAuxiliaryPanel} />
+            </div>
+          ) : null}
+          <div className={`min-w-0 ${showAuxiliaryPanel ? "" : "sm:w-[22rem] md:w-[26rem]"}`}>
+            <ModeTabsRail
+              palette={palette}
+              learningMode={learningMode}
+              selectedLanguageId={selectedLanguageId}
+              onSelectTab={handleModeTabSelect}
+              compact
+            />
+          </div>
+        </div>
       </div>
     </main>
   );

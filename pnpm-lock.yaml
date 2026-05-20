@@ -11,6 +11,9 @@ importers:
       '@fontsource/fredoka':
         specifier: ^5.2.10
         version: 5.2.10
+      '@fontsource/quicksand':
+        specifier: ^5.2.10
+        version: 5.2.10
       next:
         specifier: ^16.1.6
         version: 16.2.6(@babel/core@7.29.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -321,6 +324,9 @@ packages:
 
   '@fontsource/nunito@5.2.7':
     resolution: {integrity: sha512-pmtBq0H9ex9nk+RtJYEJOD9pag393iHETnl/PVKleF4i06cd0ttngK5ZCTgYb5eOqR3Xdlrjtev8m7bmgYprew==}
+
+  '@fontsource/quicksand@5.2.10':
+    resolution: {integrity: sha512-rck0ccT6vJF9RnbSW2ON1grq5qFZvjVOGvYIUixATXF8mNh4KglD+8Sn8QpRgKQBSBJF5yOR3SBYBWPg/Y8YbQ==}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -2700,6 +2706,8 @@ snapshots:
   '@fontsource/fredoka@5.2.10': {}
 
   '@fontsource/nunito@5.2.7': {}
+
+  '@fontsource/quicksand@5.2.10': {}
 
   '@humanfs/core@0.19.2':
     dependencies:

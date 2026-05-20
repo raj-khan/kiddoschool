@@ -9,6 +9,13 @@ type NumberBoardProps = {
   orderLabel: string;
 };
 
+function getColumnCount(total: number): number {
+  if (total <= 10) return 5;
+  if (total <= 20) return 5;
+  if (total <= 50) return 10;
+  return 10;
+}
+
 export function NumberBoard({
   values,
   visibleMaxNumber,
@@ -17,35 +24,38 @@ export function NumberBoard({
   activeNumberValue = null,
   orderLabel
 }: NumberBoardProps) {
+  const columns = getColumnCount(values.length);
+
   return (
     <section
-      className="flex h-full min-h-0 w-full flex-col rounded-[1.5rem] border p-2.5 shadow-[0_22px_60px_rgba(255,255,255,0.18)] backdrop-blur-xl sm:rounded-[1.8rem] sm:p-4"
+      className="flex h-full min-h-0 w-full flex-col rounded-2xl p-2 sm:p-3"
       style={{
-        background: palette.shell,
-        borderColor: palette.shellBorder
+        background: palette.card,
+        boxShadow: `0 0 0 1px ${palette.cardLine} inset, 0 4px 0 ${palette.cardShadow}40`
       }}
     >
-      <div className="mb-2 flex flex-wrap items-end justify-between gap-2 sm:mb-3 sm:gap-3">
-        <div className="hidden sm:block">
-          <p className="font-display text-2xl tracking-[-0.04em]" style={{ color: palette.keyText }}>
-            Number board
-          </p>
-          <p className="mt-1 text-xs font-bold leading-5 sm:text-sm sm:leading-6" style={{ color: palette.detailText }}>
-            Tap any number from 1 to {visibleMaxNumber}.
-          </p>
-        </div>
+      <div className="mb-2 hidden items-end justify-between gap-2 sm:flex">
+        <p className="font-display text-base" style={{ color: palette.ink, fontWeight: 600 }}>
+          Number board
+        </p>
         <span
-          className="hidden rounded-full px-3 py-2 text-xs font-extrabold uppercase tracking-[0.18em] sm:inline-flex"
+          className="rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.16em]"
           style={{
-            background: palette.badgeSurface,
-            color: palette.badgeText
+            background: `${palette.primary}1a`,
+            color: palette.primaryDeep,
+            fontWeight: 700
           }}
         >
-          {`Range 1-${visibleMaxNumber} · ${orderLabel}`}
+          {`1–${visibleMaxNumber} · ${orderLabel}`}
         </span>
       </div>
 
-      <div className="grid grid-cols-5 gap-1 sm:grid-cols-10 sm:gap-1.5">
+      <div
+        className="grid min-h-0 flex-1 gap-1.5 sm:gap-2"
+        style={{
+          gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`
+        }}
+      >
         {values.map((value) => {
           const isActive = activeNumberValue === String(value);
 
@@ -54,16 +64,20 @@ export function NumberBoard({
               key={value}
               type="button"
               onClick={() => onNumberSelect(value)}
-              className={`aspect-square min-w-0 rounded-[0.8rem] border px-0.5 py-0.5 text-center font-display text-[1rem] leading-none shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition duration-200 ${
-                isActive ? "scale-[1.03] -translate-y-0.5" : "hover:-translate-y-0.5"
-              } sm:rounded-[0.9rem] sm:text-[0.95rem]`}
+              className={`nuha-key-tap font-key grid place-items-center rounded-xl leading-none transition duration-150 hover:-translate-y-px ${
+                isActive ? "-translate-y-px scale-[1.05]" : ""
+              }`}
               style={{
-                background: isActive ? palette.activeKeySurface : palette.historySurface,
-                borderColor: isActive ? palette.activeKeyBorder : palette.buttonBorder,
-                color: isActive ? palette.activeKeyText : palette.historyText,
+                background: isActive
+                  ? `linear-gradient(135deg, ${palette.primary}, ${palette.primaryDeep})`
+                  : "#fff",
+                color: isActive ? "#fff" : palette.ink,
+                fontWeight: 700,
                 boxShadow: isActive
-                  ? `0 12px 26px ${palette.activeKeyGlow}, inset 0 1px 0 rgba(255,255,255,0.72)`
-                  : undefined
+                  ? `0 6px 0 ${palette.primaryDeep}, 0 14px 24px ${palette.activeKeyGlow}, 0 0 0 2px ${palette.primaryDeep} inset`
+                  : `0 3px 0 ${palette.cardShadow}, 0 0 0 1px ${palette.cardLine} inset`,
+                fontSize: "clamp(1.5rem, 4.6vw, 2.8rem)",
+                letterSpacing: "-0.02em"
               }}
               aria-pressed={isActive}
             >

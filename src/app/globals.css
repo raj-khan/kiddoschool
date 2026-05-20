@@ -3,9 +3,14 @@
 @import "@fontsource/fredoka/600.css";
 @import "@fontsource/fredoka/700.css";
 @import "@fontsource/nunito/400.css";
+@import "@fontsource/nunito/500.css";
 @import "@fontsource/nunito/600.css";
 @import "@fontsource/nunito/700.css";
 @import "@fontsource/nunito/800.css";
+@import "@fontsource/quicksand/400.css";
+@import "@fontsource/quicksand/500.css";
+@import "@fontsource/quicksand/600.css";
+@import "@fontsource/quicksand/700.css";
 @import "tailwindcss";
 
 :root {
@@ -35,11 +40,21 @@ body {
 }
 
 .font-body {
-  font-family: "Nunito", "Trebuchet MS", ui-sans-serif, system-ui, sans-serif;
+  font-family: "Nunito", "Quicksand", "Trebuchet MS", ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
 }
 
 .font-display {
-  font-family: "Fredoka", "Baloo 2", ui-rounded, system-ui, sans-serif;
+  font-family: "Fredoka", "Quicksand", "Baloo 2", ui-rounded, system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Big key glyph and on-screen keyboard letters: Quicksand is geometric and
+   matches the rounded letterforms early-readers learn in school. */
+.font-key {
+  font-family: "Quicksand", "Fredoka", "Trebuchet MS", ui-rounded, sans-serif;
+  font-feature-settings: "tnum" 1, "ss01" 1;
+  letter-spacing: -0.02em;
 }
 
 .play-surface {
@@ -329,4 +344,173 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ── Nuha redesign animations ─────────────────────────── */
+@keyframes nuha-pop {
+  0% {
+    transform: scale(0.92);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes nuha-idle {
+  from {
+    opacity: 0.9;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes nuha-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+
+  50% {
+    transform: translateY(-6px) rotate(3deg);
+  }
+}
+
+@keyframes nuha-cheer {
+  0% {
+    transform: scale(0.8) rotate(-10deg);
+  }
+
+  60% {
+    transform: scale(1.15) rotate(8deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes nuha-float {
+  0% {
+    transform: translateY(0) scale(0.4);
+    opacity: 0;
+  }
+
+  30% {
+    transform: translateY(-10px) scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-30px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+@keyframes nuha-wave {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  50% {
+    transform: scaleY(1.3);
+  }
+}
+
+@keyframes nuha-slide-in {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.nuha-keycard {
+  animation: nuha-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes nuha-wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-6deg);
+  }
+
+  75% {
+    transform: rotate(6deg);
+  }
+}
+
+.nuha-wiggle {
+  animation: nuha-wiggle 0.5s ease-in-out both;
+}
+
+@keyframes nuha-tap {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(3px) scale(0.98);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.nuha-key-tap:active {
+  animation: nuha-tap 0.18s ease-out;
+}
+
+.nuha-keycard--idle {
+  animation: nuha-idle 0.8s ease both;
+}
+
+.nuha-mascot-bob {
+  animation: nuha-bob 3s ease-in-out infinite;
+}
+
+.nuha-mascot-cheer {
+  animation: nuha-cheer 0.8s ease-out both;
+}
+
+.nuha-chip-in {
+  animation: nuha-slide-in 0.35s ease-out both;
+}
+
+.nuha-wave-icon {
+  display: inline-block;
+  animation: nuha-wave 1s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.nuha-confetti {
+  position: absolute;
+  border-radius: 9999px;
+  animation: nuha-float 1.3s ease-out both;
+  pointer-events: none;
+}
+
+.nuha-hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.nuha-hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

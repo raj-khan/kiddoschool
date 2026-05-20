@@ -1,53 +1,90 @@
 import type { Palette } from "@/lib/constants";
 
-type RecentKeyEntry = {
-  label: string;
+export type RecentKeyEntry = {
+  id: number;
+  display: string;
+  label?: string;
+  color: string;
   direction: "ltr" | "rtl";
+  isSymbol?: boolean;
 };
 
 type RecentKeysProps = {
   keys: RecentKeyEntry[];
   palette: Palette;
+  compact?: boolean;
 };
 
-export function RecentKeys({ keys, palette }: RecentKeysProps) {
+export function RecentKeys({ keys, palette, compact = false }: RecentKeysProps) {
   return (
     <section
-      className="rounded-[2rem] border p-4 shadow-[0_22px_60px_rgba(255,255,255,0.18)] backdrop-blur-xl"
+      className="flex w-full flex-col rounded-2xl p-2 sm:rounded-[1.4rem] sm:p-3"
       style={{
-        background: palette.shell,
-        borderColor: palette.shellBorder
+        background: palette.card,
+        boxShadow: `0 0 0 1px ${palette.cardLine} inset, 0 4px 0 ${palette.cardShadow}40`
       }}
+      aria-label="Recent keys"
     >
-      <div className="mb-4">
+      <div className="mb-1 flex items-center justify-between gap-2 px-1">
         <p
-          className="font-display text-2xl tracking-[-0.04em]"
-          style={{ color: palette.keyText }}
+          className="font-display text-xs uppercase tracking-[0.2em] sm:text-sm"
+          style={{ color: palette.inkSoft, fontWeight: 700 }}
         >
           Recent keys
         </p>
-        <p className="mt-1 text-sm font-bold leading-6" style={{ color: palette.detailText }}>
-          The newest 10 taps stay here so the rhythm is easy to follow.
-        </p>
+        {keys.length > 0 ? (
+          <span
+            className="font-body text-[10px] tracking-[0.16em]"
+            style={{ color: palette.inkSoft, fontWeight: 600 }}
+          >
+            newest first
+          </span>
+        ) : null}
       </div>
 
       {keys.length === 0 ? (
-        <p className="text-sm font-bold leading-6" style={{ color: palette.detailText }}>
-          The history will appear after the first key press.
+        <p
+          className="px-1 py-1 font-body text-xs italic sm:text-sm"
+          style={{ color: palette.inkSoft, fontWeight: 600 }}
+        >
+          Your keys will appear here as you play.
         </p>
       ) : (
-        <ul className="flex flex-wrap gap-3" aria-label="Recent key history">
-          {keys.map((key, index) => (
+        <ul
+          className="nuha-hide-scrollbar flex gap-2 overflow-x-auto pb-1"
+          aria-label="Recent key history"
+        >
+          {keys.map((entry, index) => (
             <li
-              key={`${key.label}-${index}`}
-              className="min-w-16 rounded-[1.3rem] px-4 py-3 text-center font-display text-2xl shadow-[0_4px_0_rgba(45,48,71,0.14),inset_0_1px_0_rgba(255,255,255,0.5)]"
+              key={entry.id}
+              dir={entry.direction}
+              className={`${index === 0 ? "nuha-chip-in" : ""} font-key flex shrink-0 flex-col items-center justify-center rounded-2xl ${
+                compact ? "min-w-[3rem] px-2 py-1.5" : "min-w-[3.5rem] px-2.5 py-2 sm:min-w-[4rem]"
+              }`}
               style={{
-                background: palette.historySurface,
-                color: palette.historyText
+                background: "#fff",
+                color: palette.ink,
+                boxShadow: `0 4px 0 ${entry.color}88, 0 0 0 1px ${palette.cardLine} inset`
               }}
-              dir={key.direction}
             >
-              {key.label}
+              <span
+                className="leading-none"
+                style={{
+                  fontWeight: 700,
+                  fontSize: compact ? "1.25rem" : "1.6rem",
+                  letterSpacing: "-0.02em"
+                }}
+              >
+                {entry.display}
+              </span>
+              {entry.isSymbol && entry.label ? (
+                <span
+                  className="mt-0.5 font-body text-[9px] uppercase tracking-wide"
+                  style={{ color: palette.inkSoft, fontWeight: 600 }}
+                >
+                  {entry.label}
+                </span>
+              ) : null}
             </li>
           ))}
         </ul>

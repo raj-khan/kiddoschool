@@ -16,41 +16,27 @@ type VirtualKeyboardProps = {
   activeKeyValue?: string | null;
 };
 
-function getKeyButtonClasses(languageKey: LanguageKey, minimal: boolean, dense: boolean): string {
-  if (dense) {
-    const denseBaseClasses =
-      "min-h-8 rounded-[0.85rem] border px-1 py-1 text-center font-display shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition duration-200 hover:-translate-y-0.5 sm:min-h-9";
+function keyFlex(languageKey: LanguageKey): string {
+  if (languageKey.size === "full") return "w-full";
+  if (languageKey.size === "wide") return "flex-[1.6_1_0%] min-w-0";
+  return "flex-[1_1_0%] min-w-0";
+}
 
-    if (languageKey.size === "full") {
-      return `${denseBaseClasses} w-full text-[11px] sm:text-xs`;
-    }
-
-    if (languageKey.size === "wide") {
-      return `${denseBaseClasses} min-w-0 flex-[1.5_1_0%] text-[10px] sm:text-[11px]`;
-    }
-
-    const labelLength = (languageKey.label ?? languageKey.displayText ?? languageKey.value).length;
-
-    return `${denseBaseClasses} min-w-0 flex-[1_1_0%] ${
-      labelLength > 2 ? "text-[10px] sm:text-[11px]" : "text-sm sm:text-lg"
-    }`;
-  }
-
-  const baseClasses = minimal
-    ? "min-h-10 rounded-[0.95rem] border px-2.5 py-1.5 text-center font-display shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition duration-200 hover:-translate-y-0.5"
-    : "min-h-12 rounded-[1.1rem] border px-3 py-2 text-center font-display shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition duration-200 hover:-translate-y-0.5";
-
-  if (languageKey.size === "full") {
-    return `${baseClasses} w-full ${minimal ? "text-xs" : "text-sm"}`;
-  }
-
-  if (languageKey.size === "wide") {
-    return `${baseClasses} ${minimal ? "min-w-0 flex-[1.5_1_0%]" : "min-w-[7rem] flex-1"} text-sm`;
-  }
-
+function keyTextSize(languageKey: LanguageKey, dense: boolean): string {
   const labelLength = (languageKey.label ?? languageKey.displayText ?? languageKey.value).length;
 
-  return `${baseClasses} min-w-0 flex-1 ${labelLength > 2 ? "text-sm" : minimal ? "text-[1.35rem]" : "text-2xl"}`;
+  if (languageKey.size === "full") {
+    return dense ? "text-xs sm:text-sm" : "text-sm sm:text-base";
+  }
+  if (languageKey.size === "wide") {
+    return dense ? "text-[11px] sm:text-xs" : "text-xs sm:text-sm";
+  }
+  if (labelLength > 2) {
+    return dense ? "text-[11px] sm:text-xs" : "text-xs sm:text-sm";
+  }
+  return dense
+    ? "text-lg sm:text-xl md:text-2xl"
+    : "text-2xl sm:text-3xl md:text-4xl";
 }
 
 export function VirtualKeyboard({
@@ -64,64 +50,50 @@ export function VirtualKeyboard({
 }: VirtualKeyboardProps) {
   const visibleRows = filterLanguageRows(languagePack, visibleKeyIds);
   const normalizedActiveKeyValue = activeKeyValue ? normalizeLanguageLookupValue(activeKeyValue) : null;
-  const complexGlyphClasses =
-    languagePack.id === "bengali"
-      ? "font-body leading-normal text-[1.45rem] sm:text-[1.65rem] min-h-12 py-2"
-      : "";
+  const bengaliExtras = languagePack.id === "bengali" ? "font-body leading-snug" : "";
+  const keyMinHeight = dense ? "min-h-11 sm:min-h-12" : "min-h-12 sm:min-h-14";
+  const gap = dense ? "gap-1.5" : "gap-2";
+  const rowGap = dense ? "space-y-1.5" : "space-y-2";
 
   return (
     <section
-      className={`${
-        dense ? "rounded-[1.55rem] p-2 sm:p-2.5" : minimal ? "rounded-[1.7rem] p-3 sm:p-3.5" : "rounded-[2rem] p-4"
-      } border shadow-[0_22px_60px_rgba(255,255,255,0.18)] backdrop-blur-xl`}
+      className={`flex h-full min-h-0 w-full flex-col rounded-2xl ${minimal || dense ? "p-2 sm:p-3" : "p-3 sm:p-4"}`}
       style={{
-        background: palette.shell,
-        borderColor: palette.shellBorder
+        background: palette.card,
+        boxShadow: `0 0 0 1px ${palette.cardLine} inset, 0 4px 0 ${palette.cardShadow}40`
       }}
     >
-      {!minimal ? (
-        <div className="mb-4">
-          <div className="flex items-center gap-3">
-            <span
-              className="grid h-11 w-11 place-items-center rounded-[1rem] border"
-              style={{
-                background: palette.historySurface,
-                borderColor: palette.buttonBorder,
-                color: palette.buttonText
-              }}
-              aria-hidden="true"
+      {!minimal && !dense ? (
+        <div className="mb-2 flex items-center gap-2">
+          <span
+            className="grid h-7 w-7 place-items-center rounded-lg"
+            style={{ background: `${palette.primary}1a`, color: palette.primaryDeep }}
+            aria-hidden="true"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <svg
-                viewBox="0 0 32 32"
-                className="h-7 w-7"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <rect x="4" y="8" width="24" height="16" rx="4" />
-                <path d="M9 13h.01M14 13h.01M19 13h.01M24 13h.01M9 18h.01M14 18h8M9 22h14" />
-              </svg>
-            </span>
-            <p
-              className="font-display text-2xl tracking-[-0.04em]"
-              style={{ color: palette.keyText }}
-            >
-              Virtual keyboard
-            </p>
-          </div>
-          <p className="mt-1 text-sm font-bold leading-6" style={{ color: palette.detailText }}>
-            Click with a mouse or tap on a screen when a physical keyboard is not enough.
+              <rect x="2" y="6" width="20" height="13" rx="2.5" />
+              <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M10 14h6M6 18h12" />
+            </svg>
+          </span>
+          <p className="font-display text-base" style={{ color: palette.ink, fontWeight: 600 }}>
+            Virtual keyboard
           </p>
         </div>
       ) : null}
 
-      <div className={dense ? "space-y-1.5" : "space-y-2"} dir={languagePack.direction}>
+      <div className={`flex min-h-0 flex-1 flex-col ${rowGap}`} dir={languagePack.direction}>
         {visibleRows.map((row, rowIndex) => (
           <div
             key={`${languagePack.id}-${rowIndex}`}
-            className={`flex ${dense ? "gap-1" : minimal ? "gap-1.5" : "gap-2"}`}
+            className={`flex flex-1 min-h-0 ${gap}`}
           >
             {row.map((languageKey, keyIndex) => {
               const isActive =
@@ -133,21 +105,33 @@ export function VirtualKeyboard({
                   key={`${languagePack.id}-${rowIndex}-${keyIndex}`}
                   type="button"
                   onClick={() => onKeyPress(languageKey)}
-                  className={`${getKeyButtonClasses(languageKey, minimal, dense)} ${complexGlyphClasses} ${isActive ? "scale-[1.03] -translate-y-0.5" : ""}`}
+                  className={`${keyFlex(languageKey)} ${keyTextSize(languageKey, dense)} ${bengaliExtras} ${keyMinHeight} nuha-key-tap font-key grid place-items-center rounded-xl leading-none transition duration-150 hover:-translate-y-px ${
+                    isActive ? "-translate-y-px scale-[1.04]" : ""
+                  }`}
                   style={{
-                    background: isActive ? palette.activeKeySurface : palette.historySurface,
-                    borderColor: isActive ? palette.activeKeyBorder : palette.buttonBorder,
-                    color: isActive ? palette.activeKeyText : palette.historyText,
+                    background: isActive
+                      ? `linear-gradient(135deg, ${palette.primary}, ${palette.primaryDeep})`
+                      : "#fff",
+                    color: isActive ? "#fff" : palette.ink,
+                    fontWeight: 700,
                     boxShadow: isActive
-                      ? `0 12px 26px ${palette.activeKeyGlow}, inset 0 1px 0 rgba(255,255,255,0.72)`
-                      : undefined
+                      ? `0 6px 0 ${palette.primaryDeep}, 0 12px 22px ${palette.activeKeyGlow}, 0 0 0 2px ${palette.primaryDeep} inset`
+                      : `0 3px 0 ${palette.cardShadow}, 0 0 0 1px ${palette.cardLine} inset`
                   }}
                   aria-pressed={isActive}
                 >
                   {languageKey.name ? (
                     <span className="flex flex-col items-center gap-0.5 leading-none">
                       <span>{languageKey.label ?? languageKey.value}</span>
-                      <span className="font-body text-[9px] font-semibold tracking-wide opacity-65">{languageKey.name}</span>
+                      <span
+                        className="font-body text-[9px] tracking-wide"
+                        style={{
+                          color: isActive ? "rgba(255,255,255,0.85)" : palette.inkSoft,
+                          fontWeight: 600
+                        }}
+                      >
+                        {languageKey.name}
+                      </span>
                     </span>
                   ) : (
                     languageKey.label ?? languageKey.displayText ?? languageKey.value
