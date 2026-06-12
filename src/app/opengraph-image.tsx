@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-import { EARLY_VOICE_HELP_NAME, SITE_NAME, SITE_TAGLINE } from "@/lib/site";
+import { SITE_NAME, SITE_TAGLINE } from "@/lib/site";
 
 export const size = {
   width: 1200,
@@ -18,9 +18,8 @@ export default function OpenGraphImage() {
           height: "100%",
           display: "flex",
           position: "relative",
-          background:
-            "linear-gradient(145deg, #fff7ef 0%, #ffd6b5 35%, #bfe6ff 74%, #dff6c5 100%)",
-          color: "#16324d",
+          background: "#FDFBF7",
+          color: "#3D372F",
           fontFamily: "sans-serif",
           overflow: "hidden"
         }}
@@ -33,7 +32,7 @@ export default function OpenGraphImage() {
             width: 280,
             height: 280,
             borderRadius: 999,
-            background: "rgba(255,255,255,0.55)"
+            background: "#E9EEE1"
           }}
         />
         <div
@@ -44,7 +43,7 @@ export default function OpenGraphImage() {
             width: 150,
             height: 150,
             borderRadius: 999,
-            background: "rgba(255,235,109,0.75)"
+            background: "#F8EDD2"
           }}
         />
         <div
@@ -55,7 +54,7 @@ export default function OpenGraphImage() {
             width: 320,
             height: 220,
             borderRadius: 60,
-            background: "rgba(255,255,255,0.5)"
+            background: "#F7E6DF"
           }}
         />
 
@@ -83,17 +82,17 @@ export default function OpenGraphImage() {
                 width: 82,
                 height: 82,
                 borderRadius: 26,
-                background: "#17324d",
+                background: "#9DAE8B",
                 color: "white",
                 fontSize: 34,
                 fontWeight: 800
               }}
             >
-              N
+              h
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
               <div style={{ fontSize: 26, fontWeight: 700, letterSpacing: 2.5, textTransform: "uppercase" }}>
-                Family learning project
+                Early learning · ages 3–6
               </div>
               <div style={{ fontSize: 64, fontWeight: 900 }}>{SITE_NAME}</div>
             </div>
@@ -101,7 +100,7 @@ export default function OpenGraphImage() {
 
           <div style={{ display: "flex", flexDirection: "column", maxWidth: 820 }}>
             <div style={{ fontSize: 70, fontWeight: 900, lineHeight: 1.02 }}>
-              Letters, colors, numbers, and warm early keyboard play.
+              Where little minds take root.
             </div>
             <div style={{ marginTop: 18, fontSize: 28, lineHeight: 1.35, fontWeight: 600 }}>
               {SITE_TAGLINE}
@@ -122,7 +121,7 @@ export default function OpenGraphImage() {
                 style={{
                   padding: "12px 18px",
                   borderRadius: 999,
-                  background: "rgba(255,255,255,0.74)"
+                  background: "#FFFFFF"
                 }}
               >
                 Browser-only
@@ -131,13 +130,13 @@ export default function OpenGraphImage() {
                 style={{
                   padding: "12px 18px",
                   borderRadius: 999,
-                  background: "rgba(255,255,255,0.74)"
+                  background: "#FFFFFF"
                 }}
               >
-                Open source
+                Calm by design
               </span>
             </div>
-            <div>{`Early voice help by ${EARLY_VOICE_HELP_NAME}`}</div>
+            <div>Apple meets Montessori</div>
           </div>
         </div>
       </div>
