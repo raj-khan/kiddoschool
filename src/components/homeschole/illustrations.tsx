@@ -55,7 +55,10 @@ export function Scene({ size = 160 }: { size?: number }) {
 }
 
 // ── Object picture illustrations (paper-cut, for the games) ──
-export const PICTURE_NAMES = ["sun", "cat", "bus", "cup", "bee", "hat"] as const;
+export const PICTURE_NAMES = [
+  "sun", "cat", "bus", "cup", "bee", "hat",
+  "dog", "pig", "fox", "fish", "frog", "bed", "box", "nut", "web", "van"
+] as const;
 export type PictureName = (typeof PICTURE_NAMES)[number];
 
 export function isPictureName(value: string): value is PictureName {
@@ -145,6 +148,112 @@ export function Pic({ name, size = 88, style }: { name: PictureName; size?: numb
         <ellipse cx="50" cy="64" rx="34" ry="9" fill="var(--sage)" />
         <path d="M27 64 Q50 28 73 64 Z" fill="var(--sage-deep)" />
         <path d="M30 61 Q50 71 70 61" stroke="var(--coral)" strokeWidth="6" fill="none" strokeLinecap="round" />
+      </g>
+    ),
+    dog: (
+      <g>
+        <path d="M28 34 q-7 13 3 23 l9 -7 Z" fill="var(--sand-deep)" />
+        <path d="M72 34 q7 13 -3 23 l-9 -7 Z" fill="var(--sand-deep)" />
+        <circle cx="50" cy="52" r="23" fill="var(--honey)" />
+        <circle cx="43" cy="49" r="3" fill="var(--ink)" />
+        <circle cx="57" cy="49" r="3" fill="var(--ink)" />
+        <ellipse cx="50" cy="62" rx="9" ry="7" fill="var(--honey-tint)" />
+        <circle cx="50" cy="59" r="3.4" fill="var(--ink)" />
+        <path d="M50 62 v4" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" />
+      </g>
+    ),
+    pig: (
+      <g>
+        <path d="M36 32 l6 9 l-10 1 Z" fill="var(--coral)" />
+        <path d="M64 32 l-6 9 l10 1 Z" fill="var(--coral)" />
+        <circle cx="50" cy="54" r="23" fill="var(--coral-tint)" stroke="var(--coral)" strokeWidth="2" />
+        <ellipse cx="50" cy="60" rx="12" ry="9" fill="var(--coral)" />
+        <circle cx="46" cy="60" r="2" fill="var(--ink)" />
+        <circle cx="54" cy="60" r="2" fill="var(--ink)" />
+        <circle cx="42" cy="48" r="2.4" fill="var(--ink)" />
+        <circle cx="58" cy="48" r="2.4" fill="var(--ink)" />
+      </g>
+    ),
+    fox: (
+      <g>
+        <path d="M30 30 L36 50 L44 40 Z" fill="var(--coral)" />
+        <path d="M70 30 L64 50 L56 40 Z" fill="var(--coral)" />
+        <path d="M30 44 Q50 36 70 44 L50 72 Z" fill="var(--coral)" />
+        <path d="M40 58 Q50 54 60 58 L50 70 Z" fill="var(--white)" />
+        <circle cx="43" cy="50" r="2.6" fill="var(--ink)" />
+        <circle cx="57" cy="50" r="2.6" fill="var(--ink)" />
+        <circle cx="50" cy="64" r="2.6" fill="var(--ink)" />
+      </g>
+    ),
+    fish: (
+      <g>
+        <path d="M68 50 L86 38 L84 62 Z" fill="var(--sage-deep)" />
+        <ellipse cx="46" cy="50" rx="28" ry="18" fill="var(--sage)" />
+        <path d="M52 50 q9 -7 18 0 q-9 7 -18 0 Z" fill="var(--sage-deep)" />
+        <circle cx="34" cy="46" r="3" fill="var(--ink)" />
+      </g>
+    ),
+    frog: (
+      <g>
+        <ellipse cx="50" cy="58" rx="26" ry="20" fill="var(--sage)" />
+        <circle cx="38" cy="38" r="10" fill="var(--sage)" />
+        <circle cx="62" cy="38" r="10" fill="var(--sage)" />
+        <circle cx="38" cy="37" r="4.5" fill="var(--white)" />
+        <circle cx="62" cy="37" r="4.5" fill="var(--white)" />
+        <circle cx="38" cy="38" r="2.4" fill="var(--ink)" />
+        <circle cx="62" cy="38" r="2.4" fill="var(--ink)" />
+        <path d="M38 60 q12 9 24 0" stroke="var(--sage-deep)" strokeWidth="3" fill="none" strokeLinecap="round" />
+      </g>
+    ),
+    bed: (
+      <g>
+        <rect x="18" y="44" width="64" height="26" rx="4" fill="var(--sand-deep)" />
+        <rect x="14" y="54" width="72" height="18" rx="4" fill="var(--coral)" />
+        <rect x="22" y="40" width="22" height="16" rx="5" fill="var(--white)" stroke="var(--sand-deep)" strokeWidth="1.5" />
+        <rect x="15" y="38" width="5" height="34" rx="2.5" fill="var(--sand-deep)" />
+        <rect x="80" y="48" width="5" height="24" rx="2.5" fill="var(--sand-deep)" />
+      </g>
+    ),
+    box: (
+      <g>
+        <path d="M24 40 L50 32 L76 40 L50 48 Z" fill="var(--honey)" />
+        <path d="M24 40 L24 66 L50 74 L50 48 Z" fill="var(--honey-deep)" />
+        <path d="M76 40 L76 66 L50 74 L50 48 Z" fill="var(--honey)" />
+        <path d="M37 36 L63 44" stroke="var(--sand-deep)" strokeWidth="3" strokeLinecap="round" />
+      </g>
+    ),
+    nut: (
+      <g>
+        <rect x="48" y="28" width="4" height="9" rx="2" fill="var(--sand-deep)" />
+        <path d="M34 44 Q50 30 66 44 Q50 51 34 44 Z" fill="var(--honey-deep)" />
+        <path d="M36 46 Q50 80 64 46 Z" fill="var(--honey)" />
+      </g>
+    ),
+    web: (
+      <g stroke="var(--ink-faint)" strokeWidth="2" fill="none" strokeLinecap="round">
+        <line x1="50" y1="50" x2="50" y2="16" />
+        <line x1="50" y1="50" x2="74" y2="26" />
+        <line x1="50" y1="50" x2="84" y2="50" />
+        <line x1="50" y1="50" x2="74" y2="74" />
+        <line x1="50" y1="50" x2="50" y2="84" />
+        <line x1="50" y1="50" x2="26" y2="74" />
+        <line x1="50" y1="50" x2="16" y2="50" />
+        <line x1="50" y1="50" x2="26" y2="26" />
+        <circle cx="50" cy="50" r="12" />
+        <circle cx="50" cy="50" r="22" />
+        <circle cx="50" cy="50" r="32" />
+      </g>
+    ),
+    van: (
+      <g>
+        <rect x="12" y="36" width="64" height="30" rx="8" fill="var(--sage)" />
+        <rect x="18" y="42" width="24" height="12" rx="3" fill="var(--bg)" />
+        <rect x="46" y="42" width="24" height="12" rx="3" fill="var(--bg)" />
+        <rect x="12" y="58" width="64" height="5" fill="var(--sage-deep)" />
+        <circle cx="28" cy="68" r="7" fill="var(--ink)" />
+        <circle cx="60" cy="68" r="7" fill="var(--ink)" />
+        <circle cx="28" cy="68" r="2.6" fill="var(--sand)" />
+        <circle cx="60" cy="68" r="2.6" fill="var(--sand)" />
       </g>
     )
   };

@@ -8,4 +8,3 @@ export const REPO_URL = "https://github.com/raj-khan/pre-school-keyboard";
 export const CONTRIBUTING_URL = `${REPO_URL}/blob/main/CONTRIBUTING.md`;
 export const ISSUES_URL = `${REPO_URL}/issues`;
 export const BUILDER_NAME = "Raj Khan";
-export const EARLY_VOICE_HELP_NAME = "Nuha";

@@ -20,7 +20,7 @@ import { dayPlan } from "@/lib/homeschole/activity-meta";
 import type { ActivityId, GameId } from "@/lib/homeschole/activity-meta";
 import { DEFAULT_PROFILE, loadProfile, saveProfile } from "@/lib/homeschole/profile";
 import type { ChildProfile } from "@/lib/homeschole/profile";
-import { DEFAULT_PROGRESS, adjustMastery, loadProgress, saveProgress } from "@/lib/homeschole/progress";
+import { DEFAULT_PROGRESS, adjustMastery, applyDailyReset, loadProgress, registerActivity, saveProgress } from "@/lib/homeschole/progress";
 import type { Progress } from "@/lib/homeschole/progress";
 import { DEFAULT_SETTINGS, loadSettings, saveSettings } from "@/lib/homeschole/settings";
 import type { Settings } from "@/lib/homeschole/settings";
@@ -56,7 +56,7 @@ export function HomescholeApp() {
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
     const stored = loadProfile();
-    setProgress(loadProgress());
+    setProgress(applyDailyReset(loadProgress()));
     setSettings(loadSettings());
     if (stored) {
       setProfile(stored);
@@ -84,7 +84,10 @@ export function HomescholeApp() {
 
   const openActivity = (id: ActivityId) => go("activity", { activityId: id });
   const completeActivity = (id: ActivityId) => {
-    setProgress((p) => ({ ...p, completed: { ...p.completed, [id]: true }, seeds: p.seeds + 1 }));
+    setProgress((p) => {
+      const next = registerActivity(p);
+      return { ...next, completed: { ...next.completed, [id]: true }, seeds: next.seeds + 1 };
+    });
     go("reward", { activityId: id });
   };
   const remainingAfter = (id: ActivityId) => plan.filter((x) => x !== id && !progress.completed[x]);
@@ -94,7 +97,11 @@ export function HomescholeApp() {
     else go("garden");
   };
 
-  const addSeeds = (n: number) => setProgress((p) => ({ ...p, seeds: p.seeds + n }));
+  const addSeeds = (n: number) =>
+    setProgress((p) => {
+      const next = registerActivity(p);
+      return { ...next, seeds: next.seeds + n };
+    });
   const recordMastery = (word: string, correct: boolean) =>
     setProgress((p) => ({ ...p, mastery: { ...p.mastery, [word]: adjustMastery(p.mastery[word], correct) } }));
 

@@ -56,8 +56,9 @@ src/
     voice.ts            speak() over SpeechSynthesis, gated by the voice setting
 ```
 
-The earlier keyboard components (`TypingGame*`, `NumberBoard`, `VirtualKeyboard`, …) and
-their `src/lib/*` modules and tests remain in the repo but are unreferenced by the main flow.
+The earlier "Nuha Keyboard" UI, its `/contribute` route, and its keyboard-only `src/lib`
+modules have been removed; `src/lib/voice.ts` and `src/lib/language-packs.ts` are kept
+because homeschole's voice layer reuses them for the family recordings.
 
 ## Design system
 
