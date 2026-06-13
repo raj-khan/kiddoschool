@@ -12,8 +12,9 @@ journey, the progress garden, five learning activities, a three-game Playroom, c
 rewards, a parent gate + dashboard, and an in-app design-system reference — all driven by
 one design system and a typed curriculum content library.
 
-The earlier keyboard components remain in `src/components` (and their `src/lib` modules and
-tests) but are no longer wired into the main flow; they are a separate cleanup pass.
+The earlier "Nuha Keyboard" UI, its `/contribute` route, and keyboard-only `src/lib` modules
+have been removed. `src/lib/voice.ts` and `src/lib/language-packs.ts` are kept — homeschole's
+voice layer reuses them for the family recordings.
 
 ## Scope
 
