@@ -10,8 +10,10 @@ import { Cheer } from "../activities/shared";
 import { GameComplete, accentFor, isVowel } from "./GameComplete";
 import { selectWords } from "@/lib/homeschole/curriculum";
 import type { Level, WordEntry } from "@/lib/homeschole/curriculum";
+import { planChallenges } from "@/lib/homeschole/word-game";
 
 const POOL = "bcdfghklmnprstv".split("");
+const VOWELS = "aeiou".split("");
 const pick = <T,>(arr: readonly T[], n: number): T[] => [...arr].sort(() => Math.random() - 0.5).slice(0, n);
 
 interface WordWorkshopProps {
@@ -29,6 +31,8 @@ export function WordWorkshop({ level, big, mastery, addSeeds, recordMastery, onA
   // Pull a varied set from the content library — adaptive on mastery so the
   // same words rarely repeat and missed ones return more often.
   const [words] = useState(() => selectWords({ level, count: 4, mastery }));
+  // Vary the challenge per round: build the whole word, or fill a missing letter.
+  const [challenges] = useState(() => planChallenges(words, level));
   const [ri, setRi] = useState(0);
   const [done, setDone] = useState(false);
 
@@ -40,8 +44,26 @@ export function WordWorkshop({ level, big, mastery, addSeeds, recordMastery, onA
   };
 
   if (words.length === 0) return <GameComplete line="More words soon!" onAgain={onAgain} onBack={onBack} />;
-  if (done) return <GameComplete line={`You built ${words.length} words!`} onAgain={onAgain} onBack={onBack} />;
+  if (done) return <GameComplete line={`You finished ${words.length} words!`} onAgain={onAgain} onBack={onBack} />;
+
+  const challenge = challenges[ri];
+  if (challenge.mode === "fill") {
+    return (
+      <FillRound key={ri} target={words[ri]} round={ri} total={words.length} blankIndex={challenge.blankIndex} big={big} onSolved={solve} />
+    );
+  }
   return <WorkshopRound key={ri} target={words[ri]} round={ri} total={words.length} nDistract={nDistract} big={big} onSolved={solve} />;
+}
+
+// Shared bits between the two round types.
+function RoundDots({ round, total }: { round: number; total: number }) {
+  return (
+    <div style={{ display: "flex", gap: 7, justifyContent: "center", marginBottom: 18 }}>
+      {Array.from({ length: total }).map((_, i) => (
+        <div key={i} style={{ width: i === round ? 22 : 9, height: 9, borderRadius: 99, background: i <= round ? "var(--sage)" : "var(--gray)", transition: "all .3s" }} />
+      ))}
+    </div>
+  );
 }
 
 function WordPrompt({ entry, color, tint, solved }: { entry: WordEntry; color: string; tint: string; solved: boolean }) {
@@ -143,12 +165,7 @@ function WorkshopRound({
 
   return (
     <div style={{ textAlign: "center" }}>
-      {/* round dots */}
-      <div style={{ display: "flex", gap: 7, justifyContent: "center", marginBottom: 18 }}>
-        {Array.from({ length: total }).map((_, i) => (
-          <div key={i} style={{ width: i === round ? 22 : 9, height: 9, borderRadius: 99, background: i <= round ? "var(--sage)" : "var(--gray)", transition: "all .3s" }} />
-        ))}
-      </div>
+      <RoundDots round={round} total={total} />
 
       {/* picture / prompt */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, marginBottom: 24 }}>
@@ -220,6 +237,124 @@ function WorkshopRound({
         {solved ? "Perfect — that spells “" + target.word + "”." : "Tap a letter to place it · tap a space to take it back"}
       </p>
       <Cheer show={solved} text="You spelled it!" />
+    </div>
+  );
+}
+
+// ── Fill-the-missing-letter round (same word, a fresh challenge) ──
+function FillRound({
+  target,
+  round,
+  total,
+  blankIndex,
+  big,
+  onSolved
+}: {
+  target: WordEntry;
+  round: number;
+  total: number;
+  blankIndex: number;
+  big: boolean;
+  onSolved: () => void;
+}) {
+  const { speak } = useVoice();
+  const letters = target.word.split("");
+  const answer = letters[blankIndex];
+  const accent = accentFor(target.word);
+  const [choices] = useState<string[]>(() => {
+    const sameClass = (isVowel(answer) ? VOWELS : POOL).filter((c) => c !== answer);
+    return [answer, ...pick(sameClass, 2)].sort(() => Math.random() - 0.5);
+  });
+  const [filled, setFilled] = useState<string | null>(null);
+  const [solved, setSolved] = useState(false);
+  const [bad, setBad] = useState<string | null>(null);
+
+  const TS = big ? 70 : 60;
+
+  const choose = (c: string) => {
+    if (solved) return;
+    if (c === answer) {
+      setFilled(c);
+      setSolved(true);
+      setTimeout(onSolved, 1050);
+    } else {
+      setBad(c);
+      setTimeout(() => setBad(null), 600);
+    }
+  };
+
+  return (
+    <div style={{ textAlign: "center" }}>
+      <RoundDots round={round} total={total} />
+
+      {/* picture / prompt */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, marginBottom: 24 }}>
+        <WordPrompt entry={target} color={accent.color} tint={accent.tint} solved={solved} />
+        <VoiceButton label={"Hear the word " + target.word} color={accent.color} tint={accent.tint} onPlay={() => speak(target.word)} />
+      </div>
+
+      <p style={{ fontSize: big ? 22 : 19, fontWeight: 600, color: "var(--ink-soft)", marginBottom: 18 }}>Add the missing letter</p>
+
+      {/* the word, with one blank */}
+      <div style={{ display: "flex", gap: 12, justifyContent: "center", marginBottom: 30, animation: bad ? "lin-shake .4s" : "none" }}>
+        {letters.map((ch, i) => {
+          const isBlank = i === blankIndex;
+          const show = isBlank ? filled : ch;
+          return (
+            <div
+              key={i}
+              style={{
+                width: TS,
+                height: TS + 6,
+                borderRadius: 16,
+                background: isBlank && !show ? "var(--cream)" : "var(--white)",
+                border: "2px " + (isBlank && !show ? "dashed var(--coral)" : "solid " + (solved ? "var(--sage)" : "var(--sand-deep)")),
+                boxShadow: isBlank && !show ? "none" : "var(--shadow-sm)",
+                display: "grid",
+                placeItems: "center",
+                transition: "all .2s"
+              }}
+            >
+              {show ? (
+                <Glyph char={show} size={big ? 40 : 34} color={isVowel(show) ? "var(--coral-deep)" : "var(--ink)"} weight={700} />
+              ) : (
+                <div style={{ width: 18, height: 4, borderRadius: 99, background: "var(--coral)" }} />
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* letter choices */}
+      <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", maxWidth: 420, margin: "0 auto" }}>
+        {choices.map((c) => (
+          <button
+            key={c}
+            onClick={() => choose(c)}
+            disabled={solved}
+            aria-label={"Letter " + c}
+            style={{
+              width: TS,
+              height: TS + 6,
+              borderRadius: 16,
+              background: "var(--sand)",
+              border: "2px solid " + (bad === c ? "var(--coral)" : "var(--sand-deep)"),
+              boxShadow: "var(--shadow-sm)",
+              display: "grid",
+              placeItems: "center",
+              cursor: solved ? "default" : "pointer",
+              animation: bad === c ? "lin-shake .4s" : "none",
+              transition: "all .2s"
+            }}
+          >
+            <Glyph char={c} size={big ? 40 : 34} color={isVowel(c) ? "var(--coral-deep)" : "var(--ink)"} weight={700} />
+          </button>
+        ))}
+      </div>
+      <p style={{ fontSize: 14.5, color: "var(--ink-faint)", marginTop: 22 }}>
+        {solved ? "Perfect — that spells “" + target.word + "”." : "Which letter is missing?"}
+      </p>
+      <Cheer show={solved} text="You found it!" />
     </div>
   );
 }
