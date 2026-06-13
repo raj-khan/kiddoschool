@@ -108,9 +108,22 @@ export function Card({
 }: CardProps) {
   const [h, setH] = useState(false);
   const shadow = { none: "none", sm: "var(--shadow-sm)", md: "var(--shadow-md)", lg: "var(--shadow-lg)" }[elevate];
+  const interactive = Boolean(onClick);
   return (
     <div
       onClick={onClick}
+      role={interactive ? "button" : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      onKeyDown={
+        interactive
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onClick?.();
+              }
+            }
+          : undefined
+      }
       onMouseEnter={() => setH(true)}
       onMouseLeave={() => setH(false)}
       className={className}
