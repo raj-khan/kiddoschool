@@ -6,10 +6,10 @@ import type { PictureName } from "@/components/homeschole/illustrations";
  * The games are *engines*; this file is the *content* they pull from. Boredom
  * is solved here, not by adding more screens: grow this bank (CVC → blends →
  * digraphs → sight words) and the same engines stay endlessly varied. Data is
- * cheap to add. The real bottleneck is bespoke paper-cut art — only six
- * pictures exist today, so words without one carry `picture: null` and the
- * games fall back to a letter tile. Community content packs (other languages,
- * themed sets) plug in by appending to `WORD_BANK`.
+ * cheap to add. The real bottleneck is bespoke paper-cut art — words without a
+ * picture carry `picture: null` and the games fall back to a letter tile.
+ * Community content packs (other languages, themed sets) plug in by appending
+ * to `WORD_BANK`.
  */
 
 export type PhonicsPattern = "cvc" | "blend" | "digraph" | "sight";
@@ -35,9 +35,9 @@ const cvc = (word: string, level: Level, picture: PictureName | null = null): Wo
   initial: word[0]
 });
 
-const word = (w: string, pattern: PhonicsPattern, level: Level): WordEntry => ({
+const word = (w: string, pattern: PhonicsPattern, level: Level, picture: PictureName | null = null): WordEntry => ({
   word: w,
-  picture: null,
+  picture,
   pattern,
   level,
   initial: w[0]
@@ -53,31 +53,31 @@ export const WORD_BANK: readonly WordEntry[] = [
   cvc("hat", 1, "hat"),
 
   // ── CVC, expanding the bank (level 1) ──
-  cvc("dog", 1),
-  cvc("pig", 1),
+  cvc("dog", 1, "dog"),
+  cvc("pig", 1, "pig"),
   cvc("hen", 1),
-  cvc("bed", 1),
-  cvc("box", 1),
+  cvc("bed", 1, "bed"),
+  cvc("box", 1, "box"),
   cvc("mat", 1),
   cvc("pen", 1),
   cvc("log", 1),
 
   // ── CVC (level 2 — a touch less common) ──
-  cvc("fox", 2),
+  cvc("fox", 2, "fox"),
   cvc("net", 2),
   cvc("jam", 2),
-  cvc("web", 2),
+  cvc("web", 2, "web"),
   cvc("rug", 2),
-  cvc("van", 2),
+  cvc("van", 2, "van"),
   cvc("zip", 2),
   cvc("mug", 2),
-  cvc("nut", 2),
+  cvc("nut", 2, "nut"),
   cvc("lip", 2),
   cvc("gum", 2),
   cvc("fan", 2),
 
   // ── Blends (level 3) ──
-  word("frog", "blend", 3),
+  word("frog", "blend", 3, "frog"),
   word("step", "blend", 3),
   word("clap", "blend", 3),
   word("drum", "blend", 3),
@@ -89,7 +89,7 @@ export const WORD_BANK: readonly WordEntry[] = [
   // ── Digraphs (level 4) ──
   word("ship", "digraph", 4),
   word("chip", "digraph", 4),
-  word("fish", "digraph", 4),
+  word("fish", "digraph", 4, "fish"),
   word("moth", "digraph", 4),
   word("bath", "digraph", 4),
   word("duck", "digraph", 4),
