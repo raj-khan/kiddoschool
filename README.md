@@ -1,101 +1,75 @@
-# Nuha Keyboard
+# homeschole
 
-A playful browser learning game for one child. Each tap or key press should feel immediate and fun: show the active item in large text, speak it aloud, change the colors, and show a friendly emoji reaction.
+A calm, premium early-learning web app for one child, ages 3–6 — "Apple meets
+Montessori." A gentle daily journey, playful phonics and reading activities, a quiet
+Playroom of games, and a parent dashboard. Browser-only and local/private by design.
 
 ## Status
 
-This repository has been prepared from the `pre-school-keyboard` template for the new project context in [kids_typing_game_development_plan.pdf](kids_typing_game_development_plan.pdf). The current build includes a playable browser app, parent settings, learning-mode switching, starter language packs, and a voice layer that can later move from browser synthesis to real open-source child voice files.
+Rebranded from the earlier `Nuha Keyboard` project to **homeschole**, implementing the
+"Linden — Early Learning" design. The build covers onboarding, the age-scaled daily
+journey, the progress garden, five learning activities, a three-game Playroom, calm
+rewards, a parent gate + dashboard, and an in-app design-system reference — all driven by
+one design system and a typed curriculum content library.
 
-## Version 1 scope
+The earlier keyboard components remain in `src/components` (and their `src/lib` modules and
+tests) but are no longer wired into the main flow; they are a separate cleanup pass.
 
-- One main screen with a clear child-friendly prompt
-- Parent settings with learning focus, language selection, and display controls
-- Display the active letter, number, or color in very large text
-- Speak the active item aloud with child-friendly wording
-- Rotate soft palettes, emojis, and encouragement messages
-- English letters mode focused on alphabet keys only
-- Computer mode for full keyboard practice with floating key feedback
-- Numbers mode with a dedicated counting board from `1-10`, `1-20`, `1-50`, or `1-100`
-- Numbers mode supports straight, reverse, or random number order
-- Colors mode with a tap-ready color bar and a softly tinted stage
-- No backend, database, auth, analytics, payments, or complex game modes
+## Scope
 
-## Planned app structure
+- Calm onboarding that captures name, age (3–6), and learning focus (local storage only)
+- Age-scaled daily journey: fewer, simpler steps at 3 → more structure at 5–6
+- Progress garden with three metaphors (garden / tree / path)
+- Five activities: trace, letter match, phonics, read-and-connect, memory
+- A Playroom of three games: Word Workshop (movable alphabet), Sound Hunt, Memory Garden
+- Calm rewards (seeds → garden) with no dopamine loops
+- Parent gate + dashboard: gentle weekly note, skill growth, healthy-engagement controls,
+  printable worksheets, and the open-ecosystem positioning
+- No backend, database, auth, analytics, or payments
+
+## The content library (engine vs. content)
+
+The games are **engines**; `src/lib/homeschole/curriculum.ts` is the **content** they pull
+from. Repetition is solved by growing the typed word bank (CVC → blends → digraphs → sight
+words, tagged by level and phonics), not by adding screens. Selection is adaptive: missed
+words resurface more, mastered ones less. Bespoke paper-cut pictures are the real bottleneck
+(six exist today); words without one fall back to a letter tile, and community content packs
+plug in by appending to `WORD_BANK`.
+
+## App structure
 
 ```text
 src/
-  app/
-    globals.css
-    layout.tsx
-    page.tsx
-  components/
-    BigKeyDisplay.tsx
-    NumberBoard.tsx
-    ControlButtons.tsx
-    LanguageSelector.tsx
-    RecentKeys.tsx
-    TypingGame.tsx
-    VirtualKeyboard.tsx
-  lib/
-    constants.ts
-    getDisplayText.ts
-    getSpeechText.ts
-    language-packs.ts
-    numbers.ts
-    random.ts
-    resolveLanguageKey.ts
-    voice.ts
+  app/                  layout.tsx (DM Sans), page.tsx → HomescholeApp, globals.css (tokens)
+  components/homeschole/
+    Icon.tsx, illustrations.tsx, ds.tsx          design vocabulary
+    voice-context.tsx, HomescholeApp.tsx         provider + root state machine
+    Onboarding.tsx
+    screens/   DailyJourney, ProgressGarden, GamesHub, ParentGate, ParentDashboard, DesignSystemScreen
+    activities/ ActivityShell, Trace, Match, Phonics, Connect, Memory, Reward, ActivityRouter
+    games/      WordWorkshop, SoundHunt, MemoryGame, GameRouter, GameComplete
+  lib/homeschole/
+    curriculum.ts, profile.ts, progress.ts, settings.ts, activity-meta.ts, voice.ts
 ```
 
 ## Project docs
 
 - `CLAUDE.md` is the project-specific instruction layer for coding agents.
-- `project-template/project-context.md` captures the product rules and scope.
 - `universal/` stays unchanged across projects and provides shared engineering conventions.
-- `CONTRIBUTING.md` explains how to add new community language packs.
-
-## Open-source direction
-
-- `LICENSE` uses MIT so contributors can extend the project.
-- New languages should be added as language packs in `src/lib/language-packs.ts`.
-- English now checks `public/audio/letters-by-nuha/` first for direct `a.mp4`, `b.mp4`, `c.mp4` style letter recordings before falling back to the shared community pack.
-- English and Numbers still support the optional community voice-pack path in `public/audio/english-community-v1/`, with browser speech as fallback.
-- Numbers already include a first real child-voice subset in `public/audio/numbers-child-v1/` for `1` to `9`, with `0` still falling back to browser speech.
-- English computer mode now reuses those same child number clips for digit keys while letter clips are still added separately.
-- Future real child voice assets should start with English, then expand to other packs through the shared voice abstraction in `src/lib/voice.ts`.
-- The learning modes are already split so future parent controls can show only selected weak letters or custom keyboard subsets.
+- `CONTRIBUTING.md` explains how to add community content packs.
 
 ## Local testing
 
-1. Install dependencies:
-
 ```bash
 pnpm install
+pnpm dev          # then open http://localhost:3000
 ```
 
-2. Start the local dev server:
+Walk the flow: onboarding (try ages 3/4/5/6 — density changes) → daily journey path → open
+each activity → reward → garden → Playroom → solve Word Workshop / Sound Hunt / Memory →
+the grown-ups lock → parent gate → dashboard (toggle voice, progress shape, reward style).
 
-```bash
-pnpm dev
-```
-
-3. Open `http://localhost:3000`.
-
-4. Manual checks for the current build:
-
-- Open the parent settings button in the top-right corner
-- Switch learning focus between `Letters`, `Computer`, and `Colors`
-- In `Letters`, switch between English, Numbers, Arabic, and Bengali
-- In English letters mode, confirm only alphabet keys are shown
-- Add `public/audio/letters-by-nuha/d.mp4`, press `D`, and confirm the app prefers that recording over browser speech
-- Press `A` and confirm it displays `A`, speaks `A`, and shows capital/small variants
-- In `Computer`, press `.` or `Enter` and confirm full keyboard practice works with floating feedback
-- In `Numbers`, change the range and order in parent settings and confirm the board updates
-- In `Numbers`, confirm `1` to `10` can use the shipped child voice clips and higher numbers fall back cleanly
-- In `Colors`, tap a color and confirm the main stage softly tints toward that color
-- Confirm `Mute voice`, `Clear screen`, and `Go fullscreen` still work
-
-5. Automated checks:
+Automated checks:
 
 ```bash
 pnpm typecheck
@@ -106,5 +80,6 @@ pnpm build
 
 ## Notes
 
-- Version 1 is browser-only and local/private by design.
-- No environment variables are required for version 1.
+- Browser-only and local/private by design; no environment variables required.
+- Voice guidance routes through `src/lib/voice.ts` (SpeechSynthesis) and is gated by the
+  parent "Voice guidance" setting.

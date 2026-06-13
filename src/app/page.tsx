@@ -1,5 +1,5 @@
-import { TypingGameClient } from "@/components/TypingGameClient";
+import { HomescholeApp } from "@/components/homeschole/HomescholeApp";
 
 export default function HomePage() {
-  return <TypingGameClient />;
+  return <HomescholeApp />;
 }

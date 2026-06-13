@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DM_Sans } from "next/font/google";
 
 import {
   BUILDER_NAME,
@@ -7,6 +8,13 @@ import {
   SITE_URL
 } from "@/lib/site";
 import "./globals.css";
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-dm-sans",
+  display: "swap"
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -18,16 +26,15 @@ export const metadata: Metadata = {
   applicationName: SITE_NAME,
   authors: [{ name: BUILDER_NAME }],
   keywords: [
-    "kids keyboard learning",
-    "letters for kids",
-    "alphabet learning app",
-    "color learning for children",
-    "numbers for kids",
-    "early childhood education",
-    "Arabic letters for kids",
-    "Bengali alphabet",
+    "homeschool app for kids",
+    "Montessori learning app",
+    "early learning ages 3 to 6",
+    "phonics for kids",
+    "reading and tracing for children",
     "preschool learning",
-    "typing game for kids",
+    "calm kids app",
+    "movable alphabet",
+    "early childhood education",
     "family learning app",
     "browser learning tool",
     "free kids app"
@@ -61,8 +68,10 @@ type RootLayoutProps = Readonly<{
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en">
-      <body className="font-body antialiased" suppressHydrationWarning>{children}</body>
+    <html lang="en" className={dmSans.variable}>
+      <body className="antialiased" suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   );
 }
