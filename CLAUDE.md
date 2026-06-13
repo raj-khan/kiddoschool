@@ -73,6 +73,7 @@ their `src/lib/*` modules and tests remain in the repo but are unreferenced by t
 - Store child profile and parent settings in local storage only; explain local-only storage in the UI.
 - Grow learning content by expanding `src/lib/homeschole/curriculum.ts`, not by adding screens.
 - Route all voice behavior through `src/lib/voice.ts`; gate it on the parent voice setting.
+- Try direct family recordings in `public/audio/letters-by-nuha/` before community packs and speech fallback (letter sounds reuse the english pack's voice chain).
 - Keep rewards calm and cumulative — no dopamine loops, flashing, or "just one more" nudges.
 - Keep parent controls responsive and scroll-safe on mobile.
 - Use restrained animation that still feels playful on desktop and mobile.
