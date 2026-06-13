@@ -11,6 +11,7 @@ export interface ChildProfile {
 
 export const CHILD_PROFILE_STORAGE_KEY = "homeschole.child-profile";
 export const CHILD_PROFILE_EVENT = "homeschole:child-profile-change";
+export const CHILD_PROFILE_SCHEMA_VERSION = 1;
 
 export const DEFAULT_PROFILE: ChildProfile = {
   name: "Maya",
@@ -46,6 +47,6 @@ export function loadProfile(): ChildProfile | null {
 
 export function saveProfile(profile: ChildProfile): void {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(CHILD_PROFILE_STORAGE_KEY, JSON.stringify(profile));
+  window.localStorage.setItem(CHILD_PROFILE_STORAGE_KEY, JSON.stringify({ version: CHILD_PROFILE_SCHEMA_VERSION, ...profile }));
   window.dispatchEvent(new Event(CHILD_PROFILE_EVENT));
 }

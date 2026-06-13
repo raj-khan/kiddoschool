@@ -13,6 +13,7 @@ export interface Progress {
 }
 
 export const PROGRESS_STORAGE_KEY = "homeschole.progress";
+export const PROGRESS_SCHEMA_VERSION = 1;
 
 // A fresh child starts with an empty garden that grows as they play.
 export const DEFAULT_PROGRESS: Progress = {
@@ -51,7 +52,7 @@ export function loadProgress(): Progress {
 
 export function saveProgress(progress: Progress): void {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(progress));
+  window.localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify({ version: PROGRESS_SCHEMA_VERSION, ...progress }));
 }
 
 /** Move a word's mastery toward 1 (correct) or down toward 0 (missed). */
