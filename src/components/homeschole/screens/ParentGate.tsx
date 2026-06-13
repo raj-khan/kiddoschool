@@ -53,7 +53,7 @@ export function ParentGate({ onPass, onCancel }: { onPass: () => void; onCancel:
             </div>
           ))}
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, maxWidth: 300, margin: "0 auto 26px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, width: "100%", maxWidth: 300, margin: "0 auto 26px" }}>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
             <button
               key={n}
