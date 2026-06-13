@@ -81,5 +81,7 @@ pnpm build
 ## Notes
 
 - Browser-only and local/private by design; no environment variables required.
-- Voice guidance routes through `src/lib/voice.ts` (SpeechSynthesis) and is gated by the
-  parent "Voice guidance" setting.
+- Voice guidance routes through `src/lib/voice.ts` and is gated by the parent "Voice
+  guidance" setting. Letter sounds prefer the real family recordings in
+  `public/audio/letters-by-nuha/` (family clips → community pack → browser speech); whole
+  words fall back to browser speech.
