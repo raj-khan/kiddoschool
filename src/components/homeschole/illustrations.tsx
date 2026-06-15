@@ -65,27 +65,49 @@ export function isPictureName(value: string): value is PictureName {
   return (PICTURE_NAMES as readonly string[]).includes(value);
 }
 
-export function Pic({ name, size = 88, style }: { name: PictureName; size?: number; style?: CSSProperties }) {
-  const uid = useId().replace(/:/g, "");
-  const rays = [...Array(8)].map((_, i) => {
-    const a = (i * Math.PI) / 4;
-    return (
-      <line
-        key={i}
-        x1={50 + Math.cos(a) * 25}
-        y1={50 + Math.sin(a) * 25}
-        x2={50 + Math.cos(a) * 36}
-        y2={50 + Math.sin(a) * 36}
-        stroke="var(--honey-deep)"
-        strokeWidth="6"
-        strokeLinecap="round"
-      />
-    );
-  });
-  const pictures: Record<PictureName, React.ReactNode> = {
+const PIC_RAYS = [...Array(8)].map((_, i) => {
+  const a = (i * Math.PI) / 4;
+  return (
+    <line
+      key={i}
+      x1={50 + Math.cos(a) * 25}
+      y1={50 + Math.sin(a) * 25}
+      x2={50 + Math.cos(a) * 36}
+      y2={50 + Math.sin(a) * 36}
+      stroke="var(--honey-deep)"
+      strokeWidth="6"
+      strokeLinecap="round"
+    />
+  );
+});
+
+// The bee needs a per-instance clip-path id, so it renders on its own.
+function BeeBody({ uid }: { uid: string }) {
+  return (
+    <g>
+      <ellipse cx="42" cy="38" rx="13" ry="8" fill="var(--sage-tint)" stroke="var(--sage)" strokeWidth="2" transform="rotate(-18 42 38)" />
+      <ellipse cx="60" cy="38" rx="13" ry="8" fill="var(--sage-tint)" stroke="var(--sage)" strokeWidth="2" transform="rotate(18 60 38)" />
+      <clipPath id={`bee${uid}`}>
+        <ellipse cx="52" cy="58" rx="22" ry="15" />
+      </clipPath>
+      <ellipse cx="52" cy="58" rx="22" ry="15" fill="var(--honey)" />
+      <g clipPath={`url(#bee${uid})`}>
+        <rect x="46" y="42" width="6" height="32" rx="3" fill="var(--ink)" />
+        <rect x="58" y="42" width="6" height="32" rx="3" fill="var(--ink)" />
+      </g>
+      <circle cx="28" cy="56" r="9" fill="var(--ink)" />
+      <path d="M24 49 l-4 -7 M30 48 l1 -8" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="20" cy="42" r="2.2" fill="var(--ink)" />
+      <circle cx="31" cy="40" r="2.2" fill="var(--ink)" />
+    </g>
+  );
+}
+
+// Static picture geometry, built once at module load (no per-render allocation).
+const STATIC_PICTURES: Record<Exclude<PictureName, "bee">, React.ReactNode> = {
     sun: (
       <g>
-        {rays}
+        {PIC_RAYS}
         <circle cx="50" cy="50" r="20" fill="var(--honey)" />
       </g>
     ),
@@ -123,24 +145,6 @@ export function Pic({ name, size = 88, style }: { name: PictureName; size?: numb
         <path d="M68 50 a11 11 0 0 1 0 18" stroke="var(--coral)" strokeWidth="6" fill="none" strokeLinecap="round" />
         <path d="M33 44 h34 l-3 27 a4 4 0 0 1 -4 3.5 H40 a4 4 0 0 1 -4 -3.5 Z" fill="var(--coral)" />
         <rect x="31" y="40" width="38" height="8" rx="4" fill="var(--coral-deep)" />
-      </g>
-    ),
-    bee: (
-      <g>
-        <ellipse cx="42" cy="38" rx="13" ry="8" fill="var(--sage-tint)" stroke="var(--sage)" strokeWidth="2" transform="rotate(-18 42 38)" />
-        <ellipse cx="60" cy="38" rx="13" ry="8" fill="var(--sage-tint)" stroke="var(--sage)" strokeWidth="2" transform="rotate(18 60 38)" />
-        <clipPath id={`bee${uid}`}>
-          <ellipse cx="52" cy="58" rx="22" ry="15" />
-        </clipPath>
-        <ellipse cx="52" cy="58" rx="22" ry="15" fill="var(--honey)" />
-        <g clipPath={`url(#bee${uid})`}>
-          <rect x="46" y="42" width="6" height="32" rx="3" fill="var(--ink)" />
-          <rect x="58" y="42" width="6" height="32" rx="3" fill="var(--ink)" />
-        </g>
-        <circle cx="28" cy="56" r="9" fill="var(--ink)" />
-        <path d="M24 49 l-4 -7 M30 48 l1 -8" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" />
-        <circle cx="20" cy="42" r="2.2" fill="var(--ink)" />
-        <circle cx="31" cy="40" r="2.2" fill="var(--ink)" />
       </g>
     ),
     hat: (
@@ -256,10 +260,13 @@ export function Pic({ name, size = 88, style }: { name: PictureName; size?: numb
         <circle cx="60" cy="68" r="2.6" fill="var(--sand)" />
       </g>
     )
-  };
+};
+
+export function Pic({ name, size = 88, style }: { name: PictureName; size?: number; style?: CSSProperties }) {
+  const uid = useId().replaceAll(":", "");
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none" aria-hidden style={style}>
-      {pictures[name]}
+      {name === "bee" ? <BeeBody uid={uid} /> : STATIC_PICTURES[name]}
     </svg>
   );
 }

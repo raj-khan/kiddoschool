@@ -12,6 +12,7 @@ export interface Settings {
 }
 
 export const SETTINGS_STORAGE_KEY = "homeschole.settings";
+export const SETTINGS_SCHEMA_VERSION = 1;
 
 export const DEFAULT_SETTINGS: Settings = {
   voice: true,
@@ -48,5 +49,5 @@ export function loadSettings(): Settings {
 
 export function saveSettings(settings: Settings): void {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+  window.localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify({ version: SETTINGS_SCHEMA_VERSION, ...settings }));
 }

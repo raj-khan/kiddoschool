@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 
 import { Icon } from "./Icon";
 import type { IconName } from "./Icon";
@@ -9,12 +10,16 @@ import { Onboarding } from "./Onboarding";
 import { DailyJourney } from "./screens/DailyJourney";
 import { ProgressGarden } from "./screens/ProgressGarden";
 import { GamesHub } from "./screens/GamesHub";
-import { GameRouter } from "./games/GameRouter";
-import { ActivityRouter } from "./activities/ActivityRouter";
 import { Reward } from "./activities/Reward";
 import { ParentGate } from "./screens/ParentGate";
-import { ParentDashboard } from "./screens/ParentDashboard";
-import { DesignSystemScreen } from "./screens/DesignSystemScreen";
+
+// Routes the child doesn't see first are code-split so they stay out of the
+// initial bundle and load on navigation. The fallback is the warm background.
+const blankScreen = () => <div style={{ minHeight: "100vh", background: "var(--bg)" }} />;
+const GameRouter = dynamic(() => import("./games/GameRouter").then((m) => m.GameRouter), { loading: blankScreen });
+const ActivityRouter = dynamic(() => import("./activities/ActivityRouter").then((m) => m.ActivityRouter), { loading: blankScreen });
+const ParentDashboard = dynamic(() => import("./screens/ParentDashboard").then((m) => m.ParentDashboard), { loading: blankScreen });
+const DesignSystemScreen = dynamic(() => import("./screens/DesignSystemScreen").then((m) => m.DesignSystemScreen), { loading: blankScreen });
 
 import { dayPlan } from "@/lib/homeschole/activity-meta";
 import type { ActivityId, GameId } from "@/lib/homeschole/activity-meta";
